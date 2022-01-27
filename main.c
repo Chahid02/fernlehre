@@ -14,9 +14,8 @@ int main(int argc, char **argv)
 {
     pthread_t threads[NUM_THREADS];
     int threadCreate;
-    int i = NUM_UI_TREAD;
-    threadCreate = pthread_create(&threads[i], NULL, UI_INTERFACE, (void *)i);
-    
+    threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
+
     if (threadCreate != 0)
     {
         printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
