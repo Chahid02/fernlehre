@@ -14,7 +14,8 @@ int main(int argc, char **argv)
     while (1)
     {
         UI_start();
-        break;
+
+        break; // Just to test
     }
 
     return 0;
