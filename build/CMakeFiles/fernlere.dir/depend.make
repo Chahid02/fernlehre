@@ -6,4 +6,5 @@ CMakeFiles/fernlere.dir/gui.c.o: ../gui.h
 
 CMakeFiles/fernlere.dir/main.c.o: ../gui.h
 CMakeFiles/fernlere.dir/main.c.o: ../main.c
+CMakeFiles/fernlere.dir/main.c.o: ../main.h
 

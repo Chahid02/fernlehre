@@ -6,7 +6,9 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "main.h"
 #include "gui.h"
+
 
 int main(int argc, char **argv)
 {
