@@ -6,13 +6,17 @@
 #include <unistd.h>
 #include <string.h>
 
-#define configFile "config.txt"
-#define logFile  "log.txt"
+
+
+#include "gui.h"
+
+
 
 int main(int argc, char **argv)
 {
 
     
+    UI_start();
    
     return 0;
 }

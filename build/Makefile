@@ -142,6 +142,33 @@ fernlere/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fernlere.dir/build.make CMakeFiles/fernlere.dir/build
 .PHONY : fernlere/fast
 
+gui.o: gui.c.o
+
+.PHONY : gui.o
+
+# target to build an object file
+gui.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fernlere.dir/build.make CMakeFiles/fernlere.dir/gui.c.o
+.PHONY : gui.c.o
+
+gui.i: gui.c.i
+
+.PHONY : gui.i
+
+# target to preprocess a source file
+gui.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fernlere.dir/build.make CMakeFiles/fernlere.dir/gui.c.i
+.PHONY : gui.c.i
+
+gui.s: gui.c.s
+
+.PHONY : gui.s
+
+# target to generate assembly for a file
+gui.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fernlere.dir/build.make CMakeFiles/fernlere.dir/gui.c.s
+.PHONY : gui.c.s
+
 main.o: main.c.o
 
 .PHONY : main.o
@@ -178,6 +205,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... fernlere"
+	@echo "... gui.o"
+	@echo "... gui.i"
+	@echo "... gui.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

@@ -1,1 +1,1 @@
-/bin/x86_64-linux-gnu-gcc-10 -O3 -DNDEBUG CMakeFiles/fernlere.dir/main.c.o -o fernlere 
+/bin/x86_64-linux-gnu-gcc-10 -O3 -DNDEBUG CMakeFiles/fernlere.dir/main.c.o CMakeFiles/fernlere.dir/gui.c.o -o fernlere 

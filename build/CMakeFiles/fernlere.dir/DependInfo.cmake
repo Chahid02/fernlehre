@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "/home/luki/Schreibtisch/fernlehre_UE/gui.c" "/home/luki/Schreibtisch/fernlehre_UE/build/CMakeFiles/fernlere.dir/gui.c.o"
   "/home/luki/Schreibtisch/fernlehre_UE/main.c" "/home/luki/Schreibtisch/fernlehre_UE/build/CMakeFiles/fernlere.dir/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")

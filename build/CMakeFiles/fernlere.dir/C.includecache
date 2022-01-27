@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/luki/Schreibtisch/fernlehre_UE/main.c
+/home/luki/Schreibtisch/fernlehre_UE/gui.c
 sys/stat.h
 -
 sys/types.h
@@ -21,4 +21,8 @@ unistd.h
 -
 string.h
 -
+gui.h
+/home/luki/Schreibtisch/fernlehre_UE/gui.h
+
+/home/luki/Schreibtisch/fernlehre_UE/gui.h
 

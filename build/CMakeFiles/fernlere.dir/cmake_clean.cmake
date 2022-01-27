@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/fernlere.dir/gui.c.o"
   "CMakeFiles/fernlere.dir/main.c.o"
   "fernlere"
   "fernlere.pdb"
