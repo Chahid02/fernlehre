@@ -1,0 +1,3 @@
+/home/luki/Schreibtisch/fernlehre_UE/build/CMakeFiles/rebuild_cache.dir
+/home/luki/Schreibtisch/fernlehre_UE/build/CMakeFiles/edit_cache.dir
+/home/luki/Schreibtisch/fernlehre_UE/build/CMakeFiles/fernlere.dir
