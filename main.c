@@ -6,17 +6,15 @@
 #include <unistd.h>
 #include <string.h>
 
-
-
 #include "gui.h"
-
-
 
 int main(int argc, char **argv)
 {
 
-    
-    UI_start();
-   
+    while (1)
+    {
+        UI_start();
+    }
+
     return 0;
 }
