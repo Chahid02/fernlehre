@@ -1200,6 +1200,18 @@
 			],
 			"type" : "STATIC",
 			"value" : "/home/luki/Schreibtisch/fernlehre_UE"
+		},
+		{
+			"name" : "pthread_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "The directory containing a CMake configuration file for pthread."
+				}
+			],
+			"type" : "PATH",
+			"value" : "pthread_DIR-NOTFOUND"
 		}
 	],
 	"kind" : "cache",

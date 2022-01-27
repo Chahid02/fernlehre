@@ -229,6 +229,9 @@ fernlehre_BINARY_DIR:STATIC=/home/luki/Schreibtisch/fernlehre_UE/build
 //Value Computed by CMake
 fernlehre_SOURCE_DIR:STATIC=/home/luki/Schreibtisch/fernlehre_UE
 
+//The directory containing a CMake configuration file for pthread.
+pthread_DIR:PATH=pthread_DIR-NOTFOUND
+
 
 ########################
 # INTERNAL cache entries

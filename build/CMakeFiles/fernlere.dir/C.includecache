@@ -23,6 +23,8 @@ unistd.h
 -
 string.h
 -
+pthread.h
+-
 main.h
 /home/luki/Schreibtisch/fernlehre_UE/main.h
 gui.h
