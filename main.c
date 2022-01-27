@@ -40,7 +40,6 @@ int main(int argc, char **argv)
 
     while (1)
     {
-
         break; // Just to test
     }
 
@@ -53,7 +52,6 @@ void *UI_INTERFACE(void *threadID)
     long thread_ID;
     thread_ID = (long)threadID;
     printf("[X] UI_INTERFACE ID, %ld started\r\n", thread_ID);
- 
     
     UI_start();
 
