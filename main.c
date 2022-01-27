@@ -14,14 +14,19 @@ int main(int argc, char **argv)
 {
     pthread_t threads[NUM_THREADS];
     int threadCreate;
-    int i;
-
-    threadCreate = pthread_create(&threads[i], NULL, UI_INTERFACE, (void *)NULL);
-    if (threadCreate)
+    int i = NUM_UI_TREAD;
+    threadCreate = pthread_create(&threads[i], NULL, UI_INTERFACE, (void *)i);
+    
+    if (threadCreate != 0)
     {
         printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
         exit(-1);
     }
+    else
+    {
+        printf("[X] Created Thread ID, %d\r\n", threadCreate);
+    }
+    
 
     while (1)
     {
