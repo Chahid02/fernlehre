@@ -1,3 +1,14 @@
+/*!
+**************************************************************
+* @file    gui.c
+* @brief   GUI SOURCE file
+* @author  GRUPPE *
+* @version V1.0
+* @date    2022-01-27
+* @copyright Copyright (c) FH CAMPUS ESE22. All rights reserved.
+**************************************************************
+*/
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
