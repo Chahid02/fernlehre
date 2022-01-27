@@ -42,12 +42,10 @@ void *UI_INTERFACE(void *threadID)
     long thread_ID;
     thread_ID = (long)threadID;
     printf("[X] UI_INTERFACE ID, %ld started\r\n", thread_ID);
-    while (1)
-    {
-        UI_start();
+ 
+    
+    UI_start();
 
-        break; // Just to test
-    }
 
     pthread_exit(NULL);
 }
