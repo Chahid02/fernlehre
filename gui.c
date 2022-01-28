@@ -25,43 +25,69 @@ char filename[100];
 
 void UI_start(void)
 {
-    char *fileContent = (char *)calloc(500, sizeof(char *));
-
     printf("----------------------------\n");
     printf("----- Programm started -----\n");
     printf("----------------------------\n");
 
-    printf("[X] Reading file : %s\n", configFile);
-    snprintf(filename, sizeof(filename), "%s", configFile);
+    char *fileContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
+    snprintf(filename, sizeof(filename), "%s", configFile);  //
     file_descriptor = open(filename, O_RDONLY);
+
     if (file_descriptor == -1)
     {
         perror("File Not found.");
         exit(1);
     }
     readSize = read(file_descriptor, fileContent, 500);
-
+    // string end char '\0'
     fileContent[499] = '\0';
-    printf("[X] fileContent:\n%s", fileContent);
-    printf("[X] Number of bytes read %s: %d\n", configFile, readSize);
+
+    
+
+    int CMD_NR;
+    printf("[X] Enter your CMD :");
+
+    while (scanf("%d", &CMD_NR) == EOF)
+    {
+    };
+
+    printf("[X] Value Choosen:%d \r\n", CMD_NR);
 
     char nr[20], ip[20], port[20], log[20];
     char *searchNewLine;
-    sscanf(fileContent, "%s%s%s%s", nr, ip, port, log);
-    printf("[X] Reading:%s--%s--%s--%s\n", nr, ip, port, log);
-    searchNewLine = strstr(fileContent, "#5");
-    sscanf(searchNewLine, "%s%s%s%s", nr, ip, port, log);
-    printf("[X] Reading:%s--%s--%s--%s--@pos%ld\n", nr, ip, port, log, searchNewLine - fileContent);
 
-    char logPeer5[100];
-    snprintf(logPeer5, sizeof(logPeer5), "%s--%s--%s--%s", nr, ip, port, log);
-    printf("[X] PeerNr5 : %s\n", logPeer5);
+    switch (CMD_NR)
+    {
+    case 1:
 
+        printf("[X] Reading file : %s\n", configFile);
+
+        printf("[X] Number of bytes written in file %s: %d\r\n", configFile, readSize);
+
+        printf("[X] fileContent:\n%s", fileContent);
+        break;
+    case 2:
+        sscanf(fileContent, "%s%s%s%s", nr, ip, port, log);
+        printf("[X] Reading:%s--%s--%s--%s\n", nr, ip, port, log);
+
+        searchNewLine = strstr(fileContent, "#5");
+        sscanf(searchNewLine, "%s%s%s%s", nr, ip, port, log);
+        printf("[X] Reading:%s--%s--%s--%s--@pos%ld\n", nr, ip, port, log, searchNewLine - fileContent);
+
+        char logPeer5[100];
+        snprintf(logPeer5, sizeof(logPeer5), "%s--%s--%s--%s", nr, ip, port, log);
+        printf("[X] PeerNr5 : %s\n", logPeer5);
+
+        break;
+
+    default:
+        break;
+    }
+    // free buffer of fileContent
     free(fileContent);
 
     /*----------------------------------------------
     Closes Programm
     ----------------------------------------------*/
-
     close(file_descriptor);
 }
