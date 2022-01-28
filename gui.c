@@ -150,6 +150,7 @@ void UI_START(void)
 
 void GUI_SELECTION(void)
 {
+    printf("\n");
     printf("---------------------------------------------\n");
     printf("----- UI SELECTION --------------------------\n");
     printf("---------------------------------------------\n");
