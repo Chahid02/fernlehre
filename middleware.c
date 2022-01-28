@@ -12,10 +12,12 @@ uint8_t calcChecksum(char* data, uint16_t* checksumBuffer)
         uint16_t dataBlock;
         memcpy(&dataBlock, data + i, 2);
         checksum += dataBlock;
-        if(checksum > 0xFF)
+        //printf("Checksum before bitshift: %d \n", checksum);
+        if(checksum > 0xFFFF)
         {
-            checksum -= 0xFF;
+            checksum -= 0xFFFF;
         }
+        //printf("Checksum after bitshift: %d\n", checksum);
     }
     *checksumBuffer = ~checksum;
 
