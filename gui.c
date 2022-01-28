@@ -156,5 +156,7 @@ void GUI_SELECTION(void)
     printf("[X] NUMBER:1 ----> READ CONFIG FILE \n");
     printf("[X] NUMBER:2 ----> GET PEER INFORMATION \n");
     printf("[X] NUMBER:3 ----> READ LOG FILE \n");
+    printf("[X] NUMBER:4 ----> DEFINE PAYLOAD \n");
+    printf("[X] NUMBER:4 ----> SEND MESSAGE \n");
     printf("---------------------------------------------\n");
 }
