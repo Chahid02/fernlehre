@@ -17,14 +17,30 @@
 #define BYTES_PAYLOAD 32
 #define MESSAGESIZE 1+1+1+BYTES_PAYLOAD+2
 
+//Typedefs:
+
 typedef struct gm
 {   
-    int id;                     //ID-Number of groupmember
+    uint8_t id;                     //ID-Number of groupmember
     char ipv4[16];              //ipv4 adress of groupmember
     uint16_t port;              //Port of groupmember
     struct sockaddr_in addr;    //socket adress of groupmember
 }groupmember;
 
+typedef struct mes
+{
+    uint8_t id;         //Message ID
+    uint8_t ack;        //Acknoledge (1/0)
+    uint8_t peer;       //peer id
+    char payload[32];   //message
+    uint16_t cs;        //checksum
+}message;
+
+//Global Variables:
+char buffer[BYTES_PAYLOAD];     //Connection between MW and UI
+uint8_t groupsize = 2;          //Amount of group members (needs to be set by UI)
+uint8_t myID = 0;               //ID of Peer (needs to be set by UI)
+uint32_t message_cnt = 0;       //message counter represents the latest message id
 
 
 /*

@@ -4,14 +4,8 @@ int middleware( void )
 {
 
 //----------------------------------------------------------------------------------
-// Get Information from UI (about myself) -> ID-Number
-
-    int myID = getID(); //TODO: Get ID from UI (global variable would be suitable)
-
-//----------------------------------------------------------------------------------
 // Get Informations from UI (about Group) -> IP, Port, ID-Number
 
-    int groupsize = 2; //TODO: Get groupsize
     groupmember mygroup[groupsize];
     getMembers(&mygroup, groupsize);
 
