@@ -124,7 +124,7 @@ void UI_START(void)
         }
         else
         {
-            printf("[X] CONFIG FILE FOUND OR CREATED\r\n");
+            printf("[X] CONFIG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
         }
 
         // string end char '\0'
