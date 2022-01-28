@@ -1,15 +1,23 @@
-/*!
-**************************************************************
-* @file    middleware.h
-* @brief   MIDDLEWARE HEADER file
-* @author  GRUPPE *
-* @version V1.0
-* @date    2022-01-27
-* @copyright Copyright (c) FH CAMPUS ESE22. All rights reserved.
-**************************************************************
+#ifndef MIDDLEWARE_H
+#define MIDDLEWARE_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+
+
+
+#define BYTES_PAYLOAD 32
+
+
+/*
+data: payload for which the checksum be calculated
+checksumBuffer: Pointer to data where checksum will be stored
+length: length of data in bytes
 */
-#ifndef MIDDLEWARE_H_
-#define MIDDLEWARE_H_
+
+uint8_t calcChecksum(char* data, uint16_t* checksumBuffer);
 
 
 
