@@ -31,6 +31,7 @@
 /*---- PROTOTYPE DECLARATION  -----------------------------*/
 /*---------------------------------------------------------*/
 
-void  UI_start(void);
+void UI_start(void);
 void UI_INT(void);
+void GUI_SELECTION(void);
 #endif

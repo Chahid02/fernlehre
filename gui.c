@@ -35,9 +35,8 @@ char filename[100];
 void UI_INT(void)
 {
     while (1)
-    {  
+    {
         UI_start();
-      
     }
 }
 
@@ -62,9 +61,6 @@ void UI_INT(void)
 */
 void UI_start(void)
 {
-    printf("----------------------------\n");
-    printf("----- Programm started -----\n");
-    printf("----------------------------\n");
 
     /*-------------------------*/
     /*---- File Descriptor ----*/
@@ -83,31 +79,46 @@ void UI_start(void)
     fileContent[499] = '\0';
     /*--------------------------------------------------------------------------------------------*/
 
-    int CMD_NR;
-    printf("[X] Enter your CMD :");
+    /*-------------------------*/
+    /*---- GUI SELECTION ------*/
+    /*--------------------------------------------------------------------------------------------*/
 
-    while (scanf("%d", &CMD_NR) == EOF)
+    GUI_SELECTION();
+
+    /*--------------------------------------------------------------------------------------------*/
+    int CMD_NR;
+    printf("[X] If you make a typing error, please press enter and type again !\r\n");
+    printf("[X] Enter your CMD (1 < n < 5):");
+
+
+    do
     {
-    };
+        fflush(stdin);
+    } while (!scanf("%d", &CMD_NR) && getchar());
 
     printf("[X] Value Choosen:%d \r\n", CMD_NR);
 
     char nr[20], ip[20], port[20], log[20];
     char *searchNewLine;
-
+clrscr();
     /*---------------------------------*/
     /*---- UI INTERFACE SELECTION -----*/
     /*--------------------------------------------------------------------------------------------*/
     switch (CMD_NR)
     {
     case 1:
-
+        printf("---------------------------------------------\n");
+        printf("----- CONFIG FILE ---------------------------\n");
+        printf("---------------------------------------------\n");
         printf("[X] Reading file : %s\n", configFile);
         printf("[X] Number of bytes written in file %s: %d\r\n", configFile, readSize);
         printf("[X] fileContent:\n%s", fileContent);
 
         break;
     case 2:
+        printf("---------------------------------------------\n");
+        printf("----- PEER INFORMATION ----------------------\n");
+        printf("---------------------------------------------\n");
         sscanf(fileContent, "%s%s%s%s", nr, ip, port, log);
         printf("[X] Reading:%s--%s--%s--%s\n", nr, ip, port, log);
 
@@ -131,4 +142,15 @@ void UI_start(void)
     /*---- Close Programm -----*/
     /*--------------------------------------------------------------------------------------------*/
     close(file_descriptor);
+}
+
+void GUI_SELECTION(void)
+{
+    printf("---------------------------------------------\n");
+    printf("----- UI SELECTION --------------------------\n");
+    printf("---------------------------------------------\n");
+    printf("[X] NUMBER:1 ----> READ CONFIG FILE \n");
+    printf("[X] NUMBER:2 ----> GET PEER INFORMATION \n");
+    printf("[X] NUMBER:3 ----> READ LOG FILE \n");
+    printf("---------------------------------------------\n");
 }

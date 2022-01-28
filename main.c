@@ -34,9 +34,11 @@ int main(int argc, char **argv)
     }
     else
     {
+    printf("---------------------------------------------\n");
+    printf("----- MULTI THREADING  ----------------------\n");
+    printf("---------------------------------------------\n");
         printf("[X] Created Thread ID, %d\r\n", threadCreate);
     }
-    
 
     while (1)
     {
@@ -46,15 +48,16 @@ int main(int argc, char **argv)
     pthread_exit(NULL);
 }
 
-
 void *UI_INTERFACE(void *threadID)
 {
     long thread_ID;
     thread_ID = (long)threadID;
-    printf("[X] UI_INTERFACE ID, %ld started\r\n", thread_ID);
-    //test
-    UI_INT();
 
+
+    printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
+
+    // test
+    UI_INT();
 
     pthread_exit(NULL);
 }
