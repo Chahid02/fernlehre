@@ -42,14 +42,14 @@ int main(int argc, char **argv)
         printf("---------------------------------------------\n");
         printf("[X] Created Thread ID, %d\r\n", threadCreate);
     }
-
+/*
     char testdata[32] = {0x01};
     uint16_t testchecksum = 0;
     uint8_t error = 0;
 
     error = calcChecksum(testdata, &testchecksum);
     printf("Testchecksum: %d\n", testchecksum);
-
+*/
     while (1)
     {
         break; // Just to test
@@ -58,6 +58,27 @@ int main(int argc, char **argv)
     pthread_exit(NULL);
 }
 
+
+
+/*!
+**************************************************************
+* @brief
+*
+* @note
+*
+* @warning
+*
+* @param[in]
+* @param[out]
+*
+* @return
+*
+* @retval = 0 -> Success
+* @retval > 0 -> Warning
+* @retval < 0 -> Fail
+*
+**************************************************************
+*/
 void *UI_INTERFACE(void *threadID)
 {
     long thread_ID;

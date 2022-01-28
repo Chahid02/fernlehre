@@ -93,7 +93,7 @@ void UI_START(void)
     /*--------------------------------------------------------------------------------------------*/
     int CMD_NR;
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
-    printf("[X] Enter your CMD (1 < n < 5):");
+    printf("[X] Enter your CMD (1 < n < 5):# ");
 
     do
     {
