@@ -6,7 +6,7 @@ ACK/No ACK: 1 byte -> uint8
 
 Peer Nr: 1 byte -> uint8
 
-Payload length (max. 31): 1 byte -> uint8
+Payload length: 1 byte -> uint8
 
 Payload: 32 byte -> char[32]
 
