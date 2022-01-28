@@ -11,3 +11,5 @@ Payload length: 1 byte -> uint8
 Payload: 32 byte -> char[32]
 
 Checksum: 2 byte -> uint16
+
+Terminating Character: 1 byte -> char
