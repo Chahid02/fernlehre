@@ -90,7 +90,7 @@ void UI_START(void)
     /*--------------------------------------------------------------------------------------------*/
     int CMD_NR;
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
-    printf("[X] Enter your CMD (1 < n < 5): #");
+    printf("[X] Enter your CMD (1 < n < 10): #");
 
     do
     {
@@ -122,6 +122,11 @@ void UI_START(void)
             perror("[X] CONFIG FILE NOT FOUND");
             exit(1);
         }
+        else
+        {
+            printf("[X] CONFIG FILE FOUND OR CREATED\r\n");
+        }
+
         // string end char '\0'
         configContent[499] = '\0';
         break;
@@ -157,17 +162,35 @@ void UI_START(void)
         printf("---------------------------------------------\n");
         printf("----- PEER INFORMATION ----------------------\n");
         printf("---------------------------------------------\n");
-        sscanf(configContent, "%s%s%s%s", nr, ip, port, log);
-        printf("[X] Reading:%s--%s--%s--%s\n", nr, ip, port, log);
+        file_descriptor = open(filename, O_RDWR | O_CREAT, 0777);
+        if (file_descriptor == -1)
+        {
+            printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
+            printf("[X] PLEASE CONFIGURE THE PATH \r\n");
+            break;
+            /*
+            perror("[X] [X] CONFIG PATH NOT CONFIGURED !!!");
+            exit(1);
+            */
 
-        searchNewLine = strstr(configContent, "#5");
-        sscanf(searchNewLine, "%s%s%s%s", nr, ip, port, log);
-        printf("[X] Reading:%s--%s--%s--%s--@pos%ld\n", nr, ip, port, log, searchNewLine - configContent);
+            break;
+        }
+        else
+        {
 
-        char logPeer5[100];
-        snprintf(logPeer5, sizeof(logPeer5), "%s--%s--%s--%s", nr, ip, port, log);
-        printf("[X] PeerNr5 : %s\n", logPeer5);
+            readSize = read(file_descriptor, configContent, 500);
 
+            sscanf(configContent, "%s%s%s%s", nr, ip, port, log);
+            printf("[X] Reading:%s--%s--%s--%s\n", nr, ip, port, log);
+
+            searchNewLine = strstr(configContent, "#5");
+            sscanf(searchNewLine, "%s%s%s%s", nr, ip, port, log);
+            printf("[X] Reading:%s--%s--%s--%s--@pos%ld\n", nr, ip, port, log, searchNewLine - configContent);
+
+            char logPeer5[100];
+            snprintf(logPeer5, sizeof(logPeer5), "%s--%s--%s--%s", nr, ip, port, log);
+            printf("[X] PeerNr5 : %s\n", logPeer5);
+        }
         break;
 
     default:
@@ -188,13 +211,15 @@ void GUI_SELECTION(void)
     printf("---------------------------------------------\n");
     printf("----- UI SELECTION --------------------------\n");
     printf("---------------------------------------------\n");
-    printf("[X] NUMBER:1 ----> CONFIGURE CONFIG PEER FILE \n");
-    printf("[X] NUMBER:2 ----> READ CONFIG PEER FILE \n");
-    printf("[X] NUMBER:3 ----> GET PEER INFORMATION \n");
-    printf("[X] NUMBER:4 ----> CREATE LOG FILE \n");
-    printf("[X] NUMBER:5 ----> READ LOG FILE \n");
-    printf("[X] NUMBER:6 ----> DEFINE PAYLOAD SIZE \n");
-    printf("[X] NUMBER:7 ----> ERROR INJECTION BIT \n");
-    printf("[X] NUMBER:8 ----> SEND MESSAGE \n");
+    printf("[X] NUMBER:1 -----> CONFIGURE CONFIG PEER FILE \n");
+    printf("[X] NUMBER:2 -----> READ CONFIG PEER FILE \n");
+    printf("[X] NUMBER:3 -----> GET PEER INFORMATION \n");
+    printf("[X] NUMBER:4 -----> CREATE LOG FILE \n");
+    printf("[X] NUMBER:5 -----> READ LOG FILE \n");
+    printf("[X] NUMBER:6 -----> DEFINE PAYLOAD SIZE \n");
+    printf("[X] NUMBER:7 -----> ERROR INJECTION BIT \n");
+    printf("[X] NUMBER:8 -----> SEND MESSAGE \n");
+    printf("[X] NUMBER:9 -----> SENT MESSAGES \n");
+    printf("[X] NUMBER:10 ----> RECEIVED MESSAGES \n");
     printf("---------------------------------------------\n");
 }
