@@ -55,9 +55,6 @@ int main(int argc, char **argv)
     uint8_t error = 0;
     error = calcChecksum(testdata, &testchecksum);
     printf("Testchecksum: %d\n", testchecksum);
-
-    error = calcChecksum(testdata, &testchecksum);
-    printf("Testchecksum: %d\n", testchecksum);
     while (1)
     {
         break; // Just to test
