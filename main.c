@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <pthread.h>
+#include <stdint.h>
 
 #include "main.h"
 #include "gui.h"
@@ -37,6 +38,11 @@ int main(int argc, char **argv)
         printf("[X] Created Thread ID, %d\r\n", threadCreate);
     }
     
+    char testdata[32] = {0x01};
+    uint16_t testchecksum = 0;
+    uint8_t error = 0;
+    error = calcChecksum(testdata, &testchecksum);
+    printf("Testchecksum: %d\n", testchecksum);
 
     while (1)
     {
