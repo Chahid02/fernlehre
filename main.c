@@ -53,7 +53,7 @@ void *UI_INTERFACE(void *threadID)
     thread_ID = (long)threadID;
     printf("[X] UI_INTERFACE ID, %ld started\r\n", thread_ID);
     //test
-    UI_start();
+    UI_INT();
 
 
     pthread_exit(NULL);

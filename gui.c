@@ -9,6 +9,9 @@
 **************************************************************
 */
 
+/*--------------------------*/
+/*---- STANDARD INCLUDE ----*/
+/*--------------------------*/
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -18,17 +21,54 @@
 #include <string.h>
 #include <pthread.h>
 
+/*------------------------*/
+/*---- PRIVATE INCLUDE----*/
+/*------------------------*/
 #include "gui.h"
 
+/*------------------------*/
+/*---- FILE DESC VARS ----*/
+/*------------------------*/
 int file_descriptor, readSize;
 char filename[100];
 
+void UI_INT(void)
+{
+    while (1)
+    {  
+        UI_start();
+      
+    }
+}
+
+/*!
+**************************************************************
+* @brief
+*
+* @note
+*
+* @warning
+*
+* @param[in]
+* @param[out]
+*
+* @return
+*
+* @retval = 0 -> Success
+* @retval > 0 -> Warning
+* @retval < 0 -> Fail
+*
+**************************************************************
+*/
 void UI_start(void)
 {
     printf("----------------------------\n");
     printf("----- Programm started -----\n");
     printf("----------------------------\n");
 
+    /*-------------------------*/
+    /*---- File Descriptor ----*/
+    /*--------------------------------------------------------------------------------------------*/
     char *fileContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
     snprintf(filename, sizeof(filename), "%s", configFile);  //
     file_descriptor = open(filename, O_RDONLY);
@@ -41,8 +81,7 @@ void UI_start(void)
     readSize = read(file_descriptor, fileContent, 500);
     // string end char '\0'
     fileContent[499] = '\0';
-
-    
+    /*--------------------------------------------------------------------------------------------*/
 
     int CMD_NR;
     printf("[X] Enter your CMD :");
@@ -56,15 +95,17 @@ void UI_start(void)
     char nr[20], ip[20], port[20], log[20];
     char *searchNewLine;
 
+    /*---------------------------------*/
+    /*---- UI INTERFACE SELECTION -----*/
+    /*--------------------------------------------------------------------------------------------*/
     switch (CMD_NR)
     {
     case 1:
 
         printf("[X] Reading file : %s\n", configFile);
-
         printf("[X] Number of bytes written in file %s: %d\r\n", configFile, readSize);
-
         printf("[X] fileContent:\n%s", fileContent);
+
         break;
     case 2:
         sscanf(fileContent, "%s%s%s%s", nr, ip, port, log);
@@ -86,8 +127,8 @@ void UI_start(void)
     // free buffer of fileContent
     free(fileContent);
 
-    /*----------------------------------------------
-    Closes Programm
-    ----------------------------------------------*/
+    /*-------------------------*/
+    /*---- Close Programm -----*/
+    /*--------------------------------------------------------------------------------------------*/
     close(file_descriptor);
 }
