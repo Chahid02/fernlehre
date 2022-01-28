@@ -270,7 +270,7 @@ void UI_LOG(void)
     printf("----- CREATE LOG FILE -----------------------\n");
     printf("---------------------------------------------\n");
 
-    FILE *fp = fopen("log.txt", "a+");
+    FILE *fp = fopen("log.txt", "w");
 
     LOG(INFO, "File open success.");
     LOG(WARN, "File path missing.");
