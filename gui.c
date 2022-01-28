@@ -29,15 +29,19 @@
 /*------------------------*/
 /*---- FILE DESC VARS ----*/
 /*------------------------*/
-int file_descriptor, readSize;
+int file_descriptor;
+int file_descriptor2;
+int readSize;
 char filename[100];
 
-void UI_INT(void)
+/*------------------------*/
+/*---- MAIN FUNCTION -----*/
+/*------------------------*/
+void UI_MAIN(void)
 {
     while (1)
-    {  
-        UI_start();
-      
+    {
+        UI_START();
     }
 }
 
@@ -60,60 +64,105 @@ void UI_INT(void)
 *
 **************************************************************
 */
-void UI_start(void)
+void UI_START(void)
 {
-    printf("----------------------------\n");
-    printf("----- Programm started -----\n");
-    printf("----------------------------\n");
+
+    /*--------------------------------*/
+    /*---- CONFIG FILE Descriptor ----*/
+    /*--------------------------------------------------------------------------------------------*/
+    char *configContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
+
+    /*--------------------------------------------------------------------------------------------*/
+
+    /*--------------------------------*/
+    /*---- LOG FILE Descriptor ----*/
+    /*--------------------------------------------------------------------------------------------*/
+    char *logContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
+
+    /*--------------------------------------------------------------------------------------------*/
 
     /*-------------------------*/
-    /*---- File Descriptor ----*/
-    /*--------------------------------------------------------------------------------------------*/
-    char *fileContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
-    snprintf(filename, sizeof(filename), "%s", configFile);  //
-    file_descriptor = open(filename, O_RDONLY);
-
-    if (file_descriptor == -1)
-    {
-        perror("File Not found.");
-        exit(1);
-    }
-    readSize = read(file_descriptor, fileContent, 500);
-    // string end char '\0'
-    fileContent[499] = '\0';
+    /*---- GUI SELECTION ------*/
     /*--------------------------------------------------------------------------------------------*/
 
+    GUI_SELECTION();
+
+    /*--------------------------------------------------------------------------------------------*/
     int CMD_NR;
-    printf("[X] Enter your CMD :");
+    printf("[X] If you make a typing error, please press enter and type again !\r\n");
+    printf("[X] Enter your CMD (1 < n < 5): #");
 
-    while (scanf("%d", &CMD_NR) == EOF)
+    do
     {
-    };
+        fflush(stdin);
+    } while (!scanf("%d", &CMD_NR) && getchar());
 
-    printf("[X] Value Choosen:%d \r\n", CMD_NR);
+    printf("[X] VALUE:%d \r\n", CMD_NR);
 
     char nr[20], ip[20], port[20], log[20];
     char *searchNewLine;
-
+    clrscr();
     /*---------------------------------*/
     /*---- UI INTERFACE SELECTION -----*/
     /*--------------------------------------------------------------------------------------------*/
     switch (CMD_NR)
     {
     case 1:
+        printf("---------------------------------------------\n");
+        printf("----- CONFIGURE CONFIG FILE -----------------\n");
+        printf("---------------------------------------------\n");
+        printf("[X] Enter the Path of the Config File:");
 
-        printf("[X] Reading file : %s\n", configFile);
-        printf("[X] Number of bytes written in file %s: %d\r\n", configFile, readSize);
-        printf("[X] fileContent:\n%s", fileContent);
+        scanf("%s", filename) == EOF;
+        // snprintf(filename, sizeof(filename), "%d", configPath);
+        file_descriptor = open(filename, O_RDWR | O_CREAT, 0777);
+
+        if (file_descriptor == -1)
+        {
+            perror("[X] CONFIG FILE NOT FOUND");
+            exit(1);
+        }
+        // string end char '\0'
+        configContent[499] = '\0';
+        break;
+
+    case 2:
+        printf("---------------------------------------------\n");
+        printf("----- CONFIG FILE ---------------------------\n");
+        printf("---------------------------------------------\n");
+        file_descriptor = open(filename, O_RDWR | O_CREAT, 0777);
+        if (file_descriptor == -1)
+        {
+            printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
+            printf("[X] PLEASE CONFIGURE THE PATH \r\n");
+            break;
+            /*
+            perror("[X] [X] CONFIG PATH NOT CONFIGURED !!!");
+            exit(1);
+            */
+
+            break;
+        }
+        else
+        {
+
+            readSize = read(file_descriptor, configContent, 500);
+            printf("[X] Reading file : %s\n", configPath);
+            printf("[X] Number of bytes written in file %s: %d\r\n", configPath, readSize);
+            printf("[X] configContent:\n%s", configContent);
+        }
 
         break;
-    case 2:
-        sscanf(fileContent, "%s%s%s%s", nr, ip, port, log);
+    case 3:
+        printf("---------------------------------------------\n");
+        printf("----- PEER INFORMATION ----------------------\n");
+        printf("---------------------------------------------\n");
+        sscanf(configContent, "%s%s%s%s", nr, ip, port, log);
         printf("[X] Reading:%s--%s--%s--%s\n", nr, ip, port, log);
 
-        searchNewLine = strstr(fileContent, "#5");
+        searchNewLine = strstr(configContent, "#5");
         sscanf(searchNewLine, "%s%s%s%s", nr, ip, port, log);
-        printf("[X] Reading:%s--%s--%s--%s--@pos%ld\n", nr, ip, port, log, searchNewLine - fileContent);
+        printf("[X] Reading:%s--%s--%s--%s--@pos%ld\n", nr, ip, port, log, searchNewLine - configContent);
 
         char logPeer5[100];
         snprintf(logPeer5, sizeof(logPeer5), "%s--%s--%s--%s", nr, ip, port, log);
@@ -124,11 +173,28 @@ void UI_start(void)
     default:
         break;
     }
-    // free buffer of fileContent
-    free(fileContent);
+    // free buffer of configContent
+    free(configContent);
 
     /*-------------------------*/
     /*---- Close Programm -----*/
     /*--------------------------------------------------------------------------------------------*/
     close(file_descriptor);
+}
+
+void GUI_SELECTION(void)
+{
+    printf("\n");
+    printf("---------------------------------------------\n");
+    printf("----- UI SELECTION --------------------------\n");
+    printf("---------------------------------------------\n");
+    printf("[X] NUMBER:1 ----> CONFIGURE CONFIG PEER FILE \n");
+    printf("[X] NUMBER:2 ----> READ CONFIG PEER FILE \n");
+    printf("[X] NUMBER:3 ----> GET PEER INFORMATION \n");
+    printf("[X] NUMBER:4 ----> CREATE LOG FILE \n");
+    printf("[X] NUMBER:5 ----> READ LOG FILE \n");
+    printf("[X] NUMBER:6 ----> DEFINE PAYLOAD SIZE \n");
+    printf("[X] NUMBER:7 ----> ERROR INJECTION BIT \n");
+    printf("[X] NUMBER:8 ----> SEND MESSAGE \n");
+    printf("---------------------------------------------\n");
 }

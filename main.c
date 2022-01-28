@@ -21,9 +21,11 @@
 
 #include "main.h"
 #include "gui.h"
+#include "middleware.h"
 
 int main(int argc, char **argv)
 {
+    clrscr();
     pthread_t threads[NUM_THREADS];
     int threadCreate;
     threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
@@ -35,6 +37,9 @@ int main(int argc, char **argv)
     }
     else
     {
+        printf("---------------------------------------------\n");
+        printf("----- MULTI THREADING  ----------------------\n");
+        printf("---------------------------------------------\n");
         printf("[X] Created Thread ID, %d\r\n", threadCreate);
     }
     
@@ -44,6 +49,8 @@ int main(int argc, char **argv)
     error = calcChecksum(testdata, &testchecksum);
     printf("Testchecksum: %d\n", testchecksum);
 
+    error = calcChecksum(testdata, &testchecksum);
+    printf("Testchecksum: %d\n", testchecksum);
     while (1)
     {
         break; // Just to test
@@ -53,14 +60,35 @@ int main(int argc, char **argv)
 }
 
 
+
+/*!
+**************************************************************
+* @brief
+*
+* @note
+*
+* @warning
+*
+* @param[in]
+* @param[out]
+*
+* @return
+*
+* @retval = 0 -> Success
+* @retval > 0 -> Warning
+* @retval < 0 -> Fail
+*
+**************************************************************
+*/
 void *UI_INTERFACE(void *threadID)
 {
     long thread_ID;
     thread_ID = (long)threadID;
-    printf("[X] UI_INTERFACE ID, %ld started\r\n", thread_ID);
-    //test
-    UI_INT();
 
+    printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
+
+    // test
+    UI_MAIN();
 
     pthread_exit(NULL);
 }
