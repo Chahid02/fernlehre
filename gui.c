@@ -35,6 +35,12 @@ int readSize;
 char filename[100];
 
 /*------------------------*/
+/*---- FLAGS -------------*/
+/*------------------------*/
+
+int logFlag;
+
+/*------------------------*/
 /*---- MAIN FUNCTION -----*/
 /*------------------------*/
 void UI_MAIN(void)
@@ -189,13 +195,12 @@ void UI_START(void)
             printf("[X] Enter the PEER #NR:");
             int ret = scanf("%s", inputNr);
             snprintf(searchNr, sizeof("#"), "%s", "#");
-            int inputDec= atoi(inputNr);
+            int inputDec = atoi(inputNr);
             if (inputDec <= PEER_MAX_DEC)
             {
                 snprintf(searchNr, sizeof(inputNr), "%s", inputNr);
-                                snprintf(searchNr, sizeof("#"), "%s", "#");
-                snprintf(searchNr, sizeof(inputNr), "%s", inputNr);
-
+                // snprintf(searchNr, sizeof("#"), "%s", "#");
+                snprintf(searchNr, sizeof(inputNr), "#%s", inputNr);
                 readSize = read(file_descriptor, configContent, 500);
 
                 sscanf(configContent, "%s%s%s%s", nr, ip, port, log);
@@ -203,7 +208,7 @@ void UI_START(void)
 
                 searchNewLine = strstr(configContent, searchNr);
                 sscanf(searchNewLine, "%s%s%s%s", nr, ip, port, log);
-                printf("[X] PEER %s: %s--%s--%s--%s--@pos%ld\n",searchNr, nr, ip, port, log, searchNewLine - configContent);
+                printf("[X] PEER %s: %s--%s--%s--%s--@pos%ld\n", searchNr, nr, ip, port, log, searchNewLine - configContent);
 
                 /* //Just 4 Testing
 
@@ -218,11 +223,11 @@ void UI_START(void)
                 fflush(stdin);
                 printf("[X] WRONG PEER #NR !!!");
             }
-
         }
         break;
 
     case 4:
+        logFlag = 1;
         break;
 
     case 5:
@@ -245,6 +250,8 @@ void UI_START(void)
     default:
         break;
     }
+    fflush(stdin);
+    logFlag = 0;
     // free buffer of configContent
     free(configContent);
 
@@ -271,4 +278,19 @@ void GUI_SELECTION(void)
     printf("[X] NUMBER:9 -----> SENT MESSAGES \n");
     printf("[X] NUMBER:10 ----> RECEIVED MESSAGES \n");
     printf("---------------------------------------------\n");
+}
+
+void UI_LOG(void)
+{
+
+    if (logFlag == 1)
+    {
+        FILE *fp = fopen("log.txt", "a+");
+
+        LOG(INFO, "File open success.");
+        LOG(WARN, "File path missing.");
+        LOG(ERROR, "File close failed.");
+
+        fclose(fp);
+    }
 }

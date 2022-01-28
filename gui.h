@@ -12,6 +12,10 @@
 #ifndef GUI_H_
 #define GUI_H_
 
+
+
+#define LOG(X, Y) fprintf (fp, #X ": Time:%s, File:%s(%d) " #Y  "\n", __TIMESTAMP__, __FILE__, __LINE__)
+
 /*---------------------------------------------------------*/
 /*---- TERMINAL PRINTCLEAR --------------------------------*/
 /*---------------------------------------------------------*/
@@ -22,6 +26,9 @@
 /*---------------------------------------------------------*/
 #define PEER_NR "#5"
 #define PEER_MAX_DEC 5
+
+
+
 #define configFile "config.txt"
 #define logFile "log.txt"
 #define configPath "../config.txt"
@@ -34,4 +41,5 @@
 void UI_START(void);
 void UI_MAIN(void);
 void GUI_SELECTION(void);
+void UI_LOG(void);
 #endif
