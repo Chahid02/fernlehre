@@ -20,7 +20,8 @@
 /*---------------------------------------------------------*/
 /*---- GUI FILES  -----------------------------------------*/
 /*---------------------------------------------------------*/
-
+#define PEER_NR "#5"
+#define PEER_MAX_DEC 5
 #define configFile "config.txt"
 #define logFile "log.txt"
 #define configPath "../config.txt"
