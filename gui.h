@@ -21,8 +21,10 @@
 /*---- GUI FILES  -----------------------------------------*/
 /*---------------------------------------------------------*/
 
-#define configFile "../config.txt"
+#define configFile "config.txt"
 #define logFile "log.txt"
+#define configPath "../config.txt"
+#define logPath "../log.txt"
 
 /*---------------------------------------------------------*/
 /*---- PROTOTYPE DECLARATION  -----------------------------*/
