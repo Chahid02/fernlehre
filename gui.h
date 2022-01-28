@@ -12,7 +12,11 @@
 #ifndef GUI_H_
 #define GUI_H_
 
-
+/*---------------------------------------------------------*/
+/*---- MULTITHREAD DEFINES  -------------------------------*/
+/*---------------------------------------------------------*/
+#define NUM_THREADS 2
+#define NUM_UI_TREAD 0
 
 #define LOG(X, Y) fprintf (fp, #X ": Time:%s, File:%s(%d) " #Y  "\n", __TIMESTAMP__, __FILE__, __LINE__)
 
@@ -42,4 +46,5 @@ void UI_START(void);
 void UI_MAIN(void);
 void GUI_SELECTION(void);
 void UI_LOG(void);
+void *UI_INTERFACE(void *threadID);
 #endif

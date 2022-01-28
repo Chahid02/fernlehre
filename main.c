@@ -23,6 +23,10 @@
 #include "gui.h"
 #include "middleware.h"
 
+
+static int do_mutex;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 int main(int argc, char **argv)
 {
     clrscr();
@@ -86,9 +90,19 @@ void *UI_INTERFACE(void *threadID)
     thread_ID = (long)threadID;
 
     printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
-
-    // test
+    
+    while(1){
+        pthread_mutex_lock(&mutex);
     UI_MAIN();
+     pthread_mutex_unlock(&mutex);
+    pthread_mutex_lock(&mutex);
+    UI_LOG();
+    pthread_mutex_unlock(&mutex);
+
+    }
+ 
+
+
 
     pthread_exit(NULL);
 }

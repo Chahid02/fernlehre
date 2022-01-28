@@ -45,10 +45,9 @@ int logFlag;
 /*------------------------*/
 void UI_MAIN(void)
 {
-    while (1)
-    {
+
         UI_START();
-    }
+    
 }
 
 /*!
@@ -100,8 +99,8 @@ void UI_START(void)
 
     do
     {
-        fflush(stdin);
-    } while (!scanf("%d", &CMD_NR) && getchar());
+  
+    } while (scanf("%d", &CMD_NR) <= 0 && getchar());
 
     printf("[X] VALUE:%d \r\n", CMD_NR);
 
@@ -117,6 +116,7 @@ void UI_START(void)
     switch (CMD_NR)
     {
     case 1:
+    {
         printf("---------------------------------------------\n");
         printf("----- CONFIGURE CONFIG FILE -----------------\n");
         printf("---------------------------------------------\n");
@@ -140,8 +140,9 @@ void UI_START(void)
         // string end char '\0'
         configContent[499] = '\0';
         break;
-
+    }
     case 2:
+    {
         printf("---------------------------------------------\n");
         printf("----- CONFIG FILE ---------------------------\n");
         printf("---------------------------------------------\n");
@@ -167,7 +168,9 @@ void UI_START(void)
         }
 
         break;
+    }
     case 3:
+    {
         printf("---------------------------------------------\n");
         printf("----- PEER INFORMATION ----------------------\n");
         printf("---------------------------------------------\n");
@@ -225,30 +228,15 @@ void UI_START(void)
             }
         }
         break;
-
+    }
     case 4:
-        logFlag = 1;
+    {
         break;
-
-    case 5:
-        break;
-
-    case 6:
-        break;
-
-    case 7:
-        break;
-    case 8:
-        break;
-
-    case 9:
-        break;
-
-    case 10:
-        break;
-
+    }
     default:
+    {
         break;
+    }
     }
     fflush(stdin);
     logFlag = 0;
@@ -283,14 +271,12 @@ void GUI_SELECTION(void)
 void UI_LOG(void)
 {
 
-    if (logFlag == 1)
-    {
-        FILE *fp = fopen("log.txt", "a+");
+    FILE *fp = fopen("log.txt", "a+");
 
-        LOG(INFO, "File open success.");
-        LOG(WARN, "File path missing.");
-        LOG(ERROR, "File close failed.");
+    LOG(INFO, "File open success.");
+    LOG(WARN, "File path missing.");
+    LOG(ERROR, "File close failed.");
 
-        fclose(fp);
-    }
+    fclose(fp);
+    return;
 }
