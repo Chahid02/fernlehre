@@ -90,7 +90,6 @@ void UI_start(void)
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
     printf("[X] Enter your CMD (1 < n < 5):");
 
-
     do
     {
         fflush(stdin);
@@ -100,7 +99,7 @@ void UI_start(void)
 
     char nr[20], ip[20], port[20], log[20];
     char *searchNewLine;
-clrscr();
+    clrscr();
     /*---------------------------------*/
     /*---- UI INTERFACE SELECTION -----*/
     /*--------------------------------------------------------------------------------------------*/
