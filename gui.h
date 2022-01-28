@@ -28,7 +28,7 @@
 /*---- PROTOTYPE DECLARATION  -----------------------------*/
 /*---------------------------------------------------------*/
 
-void UI_start(void);
-void UI_INT(void);
+void UI_START(void);
+void UI_MAIN(void);
 void GUI_SELECTION(void);
 #endif

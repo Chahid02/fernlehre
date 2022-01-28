@@ -32,11 +32,16 @@
 int file_descriptor, readSize;
 char filename[100];
 
-void UI_INT(void)
+
+
+/*------------------------*/
+/*---- MAIN FUNCTION -----*/
+/*------------------------*/
+void UI_MAIN(void)
 {
     while (1)
     {
-        UI_start();
+        UI_START();
     }
 }
 
@@ -59,7 +64,7 @@ void UI_INT(void)
 *
 **************************************************************
 */
-void UI_start(void)
+void UI_START(void)
 {
 
     /*-------------------------*/
