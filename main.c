@@ -31,31 +31,31 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int main(int argc, char **argv)
 {
     clrscr();
-    // pthread_t threads[NUM_THREADS];
-    // int threadCreate;
-    // threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
+    pthread_t threads[NUM_THREADS];
+    int threadCreate;
+    threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
 
-    // if (threadCreate != 0)
-    // {
-    //     printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
-    //     exit(-1);
-    // }
-    // else
-    // {
-    //     printf("---------------------------------------------\n");
-    //     printf("----- MULTI THREADING  ----------------------\n");
-    //     printf("---------------------------------------------\n");
-    //     printf("[X] Created Thread ID, %d\r\n", threadCreate);
-    // }
+    if (threadCreate != 0)
+    {
+        printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
+        exit(-1);
+    }
+    else
+    {
+        printf("---------------------------------------------\n");
+        printf("----- MULTI THREADING  ----------------------\n");
+        printf("---------------------------------------------\n");
+        printf("[X] Created Thread ID, %d\r\n", threadCreate);
+    }
 
     char testdata[BYTES_PAYLOAD];
-    
+
     for (uint8_t i = 0; i < BYTES_PAYLOAD; i++)
     {
         testdata[i] = 0x20;
     }
 
-    char testdata[32] = {0x01};
+    // char testdata[32] = {0x01};
     uint16_t testchecksum = 0;
     uint8_t error = 0;
     error = calcChecksum(testdata, &testchecksum);
@@ -63,13 +63,13 @@ int main(int argc, char **argv)
 
     error = calcChecksum(testdata, &testchecksum);
     printf("Testchecksum: %d\n", testchecksum);
-    
-        while (1)
+
+    while (1)
     {
         break; // Just to test
     }
 
-    //pthread_exit(NULL);
+    pthread_exit(NULL);
 }
 
 /*!

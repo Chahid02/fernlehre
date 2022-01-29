@@ -48,6 +48,7 @@ int logFlag;
 /*------------------------*/
 void UI_MAIN(void)
 {
+    UI_START();
 }
 
 /*!
