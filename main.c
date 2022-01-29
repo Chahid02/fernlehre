@@ -14,11 +14,9 @@
 static int do_mutex;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-<<<<<<< HEAD
 // char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
 char *logfilePathTesting = logFilename;
-=======
-char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
+//char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
 
 inputData myInputData = {.newMsgReceived = false};
 
@@ -27,7 +25,6 @@ extern uint8_t groupsize;        //Amount of group members (needs to be set by U
 extern uint8_t myID;              //ID of Peer (needs to be set by UI)
 extern uint32_t message_cnt;       //message counter represents the latest message id
 
->>>>>>> 7e5d1470c98a016adf56954ce20705da1af23fcf
 void testChecksum()
 {
     char testdata[BYTES_PAYLOAD];
@@ -122,7 +119,6 @@ void testMiddleWare()
 int main(int argc, char **argv)
 {
     clrscr();
-<<<<<<< HEAD
     pthread_t threads[NUM_THREADS];
     int threadCreate;
     threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
@@ -142,7 +138,6 @@ int main(int argc, char **argv)
 
     // createLog(logFilename); // IN GUI FILE !!!
     // createLog(logfilePathTesting);
-=======
     // pthread_t threads[NUM_THREADS];
     // int threadCreate;
     // threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
@@ -160,10 +155,9 @@ int main(int argc, char **argv)
     //     printf("[X] Created Thread ID, %d\r\n", threadCreate);
     // }
 
-    createLog(logfilePathTesting);
+    //createLog(logfilePathTesting);
 
     testMiddleWare();
->>>>>>> 7e5d1470c98a016adf56954ce20705da1af23fcf
     // testChecksum();
     // testStoreFrame();
 

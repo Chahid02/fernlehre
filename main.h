@@ -28,6 +28,8 @@
 #include "gui.h"
 #include "middleware.h"
 
+extern char* logfilePathTesting; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
+
 /*---------------------------------------------------------*/
 /*---- MULTITHREAD DEFINES  -------------------------------*/
 /*---------------------------------------------------------*/
@@ -46,10 +48,5 @@
 
 void *UI_INTERFACE(void *threadID);
 
-<<<<<<< HEAD
-void testChecksum();
-void testStoreFrame();
-=======
 
->>>>>>> 2f46bff493eafa5a3eaa1dd9232f5c6aa4654f0d
 #endif
