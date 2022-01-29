@@ -1,6 +1,6 @@
-NR		IP		PORT	LOG
-#1	155.255.255.255		1555	log.txt
-#2	255.255.255.255		2555	log.txt
-#3	355.255.255.255		3555	log.txt
-#4	455.255.255.255		4555	log.txt
-#5	555.255.255.255		5555	log.txt
+MessageID PeerNr Payload
+        1      1 Test 
+        1      1 Test 
+        1      1 Test 
+        1      1 Test 
+        1      1 Test 

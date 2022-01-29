@@ -2,7 +2,7 @@
 
 
 //Global Variables:
-char buffer[BYTES_PAYLOAD];     //Connection between MW and UI
+char buffer[BYTES_PAYLOAD+1];     //Connection between MW and UI
 uint8_t groupsize = 2;          //Amount of group members (needs to be set by UI)
 uint8_t myID = 0;               //ID of Peer (needs to be set by UI)
 uint32_t message_cnt = 0;       //message counter represents the latest message id
@@ -130,7 +130,7 @@ int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
 
 int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, char *payload){
     
-    printf("Messege to send: %s \n", payload);
+    printf("Message to send: %s \n", payload);
 
     //TODO: Build message -> MES_NR + ACK + PEER + payload + checksum
 
@@ -234,7 +234,7 @@ uint8_t calcChecksum(char* data, uint16_t* checksumBuffer)
     return errCode;
 }
 
-uint8_t storeFrame(Frame* storageFrame, char* rawFrame)
+uint8_t storeFrame(Frame* storageFrame, char rawFrame [BYTES_FRAME_TOTAL])
 {
     uint8_t errCode = 0;
     uint8_t bufferPosition = 0;
@@ -242,11 +242,6 @@ uint8_t storeFrame(Frame* storageFrame, char* rawFrame)
     if(rawFrame == NULL || storageFrame == NULL)
     {
         printf("NULL Pointer! \n");
-    }
-
-    if(strlen(rawFrame) != BYTES_FRAME_TOTAL)
-    {
-        printf("Invalid frame length! \n");
     }
 
     memcpy(&(storageFrame->msgId), rawFrame, BYTES_MSG_ID);
@@ -301,7 +296,39 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
     bufferPosition += BYTES_PAYLOAD;
     errCode = calcChecksum(payloadTemp, &checksum);
     memcpy(rawFrame+bufferPosition, &checksum, BYTES_CHECKSUM);
+    bufferPosition += BYTES_CHECKSUM;
+    rawFrame[bufferPosition] = '\0';
 
+
+    return errCode;
+}
+
+uint8_t createLog(char* filepath)
+{
+    uint8_t errCode;
+    FILE* myFile = fopen(filepath, "w");
+    if(myFile == NULL)
+    {
+        printf("Error opening logfile!\n");
+    }
+    fprintf(myFile, "MessageID PeerNr Payload\n");
+    fclose(myFile);
+
+    return errCode;
+}
+
+uint8_t logMessage(Frame msgFrame, char* filepath)
+{
+    uint8_t errCode;
+    printf("Writing to log...\n");
+    FILE* myFile = fopen(filepath, "a");
+    if(myFile == NULL)
+    {
+        printf("Error opening logfile!\n");
+    }
+    //print MsgId Peer Payload
+    fprintf(myFile, "%9d %6d %s \n", msgFrame.msgId, msgFrame.peerNr, msgFrame.payload);
+    fclose(myFile);
 
     return errCode;
 }

@@ -28,48 +28,80 @@
 static int do_mutex;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-int main(int argc, char **argv)
+char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
+
+void testChecksum()
 {
-    clrscr();
-    pthread_t threads[NUM_THREADS];
-    int threadCreate;
-    threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
-
-    if (threadCreate != 0)
-    {
-        printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
-        exit(-1);
-    }
-    else
-    {
-        printf("---------------------------------------------\n");
-        printf("----- MULTI THREADING  ----------------------\n");
-        printf("---------------------------------------------\n");
-        printf("[X] Created Thread ID, %d\r\n", threadCreate);
-    }
-
     char testdata[BYTES_PAYLOAD];
-
     for (uint8_t i = 0; i < BYTES_PAYLOAD; i++)
     {
         testdata[i] = 0x20;
     }
-
-    // char testdata[32] = {0x01};
     uint16_t testchecksum = 0;
     uint8_t error = 0;
     error = calcChecksum(testdata, &testchecksum);
     printf("Testchecksum: %d\n", testchecksum);
+}
 
-    error = calcChecksum(testdata, &testchecksum);
-    printf("Testchecksum: %d\n", testchecksum);
+void testStoreFrame()
+{
+    Frame myStorageFrame;
+    char myRawFrame[BYTES_FRAME_TOTAL];
+    uint8_t myMsgId = 0x01;
+    uint8_t myAck = 0x00;
+    uint8_t myPeerNr = 0x01;
+    uint8_t myPayloadLength = 4;
+    char myInputData[5]= "Test";
+    createRawFrame(myRawFrame , myMsgId, myAck, myPeerNr, myPayloadLength, myInputData);
+    printf("RawFrame: %s\n", myRawFrame);
+    for(int i = 0; i < BYTES_FRAME_TOTAL; i++)
+    {
+        printf("Rawframe index %d: %X\n", i, myRawFrame[i]);
+    }
+    storeFrame(&myStorageFrame, myRawFrame);
+
+    printf("MsgID: %d\n", myStorageFrame.msgId);
+    printf("ACK: %d\n", myStorageFrame.ack);
+    printf("PeerNr: %d\n", myStorageFrame.peerNr);
+    printf("PayloadLength: %d\n", myStorageFrame.payloadLength);
+    printf("Payload: %s\n", myStorageFrame.payload);
+    printf("Checksum: %d\n", myStorageFrame.checksum);
+
+    for(int i=0; i<5; i++){
+        logMessage(myStorageFrame, logfilePathTesting);
+    }
+}
+
+int main(int argc, char **argv)
+{
+    clrscr();
+    // pthread_t threads[NUM_THREADS];
+    // int threadCreate;
+    // threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
+
+    // if (threadCreate != 0)
+    // {
+    //     printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
+    //     exit(-1);
+    // }
+    // else
+    // {
+    //     printf("---------------------------------------------\n");
+    //     printf("----- MULTI THREADING  ----------------------\n");
+    //     printf("---------------------------------------------\n");
+    //     printf("[X] Created Thread ID, %d\r\n", threadCreate);
+    // }
+
+    createLog(logfilePathTesting);
+    testChecksum();
+    testStoreFrame();
 
     while (1)
     {
         break; // Just to test
     }
 
-    pthread_exit(NULL);
+    //pthread_exit(NULL);
 }
 
 /*!
