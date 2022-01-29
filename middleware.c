@@ -124,6 +124,12 @@ int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
         return(-1);
     }
 
+    // Make socket nonblocking
+    long save_fd;
+    save_fd = fcntl(*mysocket,F_GETFL);
+    save_fd |= O_NONBLOCK;
+    fcntl(*mysocket, F_SETFL,save_fd);    
+
     return(0);
 
 }
