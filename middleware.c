@@ -283,7 +283,7 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
         payloadTemp[i] = inputData[i];
         //rawFrame[bufferPosition + i] = inputData[i];
     }
-    //fill the unused bytes of the payload with 0x00
+    //fill the unused bytes of the payload with 0x00s
     for (uint8_t i = 0; i < BYTES_PAYLOAD - payloadLength; i++)
     {
         payloadTemp[payloadLength + i] = 0x00;
