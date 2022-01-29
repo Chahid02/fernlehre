@@ -14,6 +14,8 @@
 #include <sys/uio.h>
 #include <fcntl.h>
 
+#include "main.h"
+
 #define BYTES_MSG_ID 1
 #define BYTES_ACK 1
 #define BYTES_PEER_NR 1
@@ -41,9 +43,16 @@ typedef struct gm
     struct sockaddr_in addr;    //socket adress of groupmember
 }groupmember;
 
+typedef struct
+{
+    char* userMsg;
+    uint8_t msgLength;
+    bool newMsgReceived;
+}inputData;
+
 
 //Global Variables:
-extern char buffer[BYTES_PAYLOAD+1];     //Connection between MW and UI
+extern char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
 extern uint8_t groupsize;        //Amount of group members (needs to be set by UI)
 extern uint8_t myID;              //ID of Peer (needs to be set by UI)
 extern uint32_t message_cnt;       //message counter represents the latest message id
@@ -72,7 +81,7 @@ uint8_t storeFrame(Frame* storageFrame, char rawFrame[BYTES_FRAME_TOTAL]);
 /*
 creates a raw frame for sending according to the frame format, with the given input data
 */
-uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL] , uint8_t msgId, uint8_t ack, uint8_t peerNr, uint8_t payloadLength, char* inputData);
+uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL] , uint8_t msgId, uint8_t ack, uint8_t peerNr, inputData userInputData);
 
 /*
 creates logfile if it doesn't exist, or clears the old one if it exists, and writes header information
