@@ -14,9 +14,7 @@
 static int do_mutex;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
-char *logfilePathTesting = logFilename;
-//char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
+char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
 
 inputData myInputData = {.newMsgReceived = false};
 
@@ -44,13 +42,15 @@ void testStoreFrame()
     inputData myInputData;
     char myRawFrame[BYTES_FRAME_TOTAL];
     uint8_t myMsgId = 0x01;
+    uint8_t mySndId = 0x01;
     uint8_t myAck = 0x00;
     uint8_t myPeerNr = 0x01;
-    uint8_t myPayloadLength = 4;
-    char myInputData[5] = "Test";
-    createRawFrame(myRawFrame, myMsgId, myAck, myPeerNr, myPayloadLength, myInputData);
+    myInputData.msgLength = 4;
+    myInputData.userMsg= "Test";
+    createRawFrame(myRawFrame , myMsgId, mySndId, myAck, myPeerNr, myInputData);
+    myInputData.newMsgReceived = false;
     printf("RawFrame: %s\n", myRawFrame);
-    for (int i = 0; i < BYTES_FRAME_TOTAL; i++)
+    for(int i = 0; i < BYTES_FRAME_TOTAL; i++)
     {
         printf("Rawframe index %d: %X\n", i, myRawFrame[i]);
     }
@@ -63,13 +63,9 @@ void testStoreFrame()
     printf("Payload: %s\n", myStorageFrame.payload);
     printf("Checksum: %d\n", myStorageFrame.checksum);
 
-    
-     for(int i=0; i<5; i++){
+    for(int i=0; i<5; i++){
         logMessage(myStorageFrame, logfilePathTesting);
     }
-    
-
-
 }
 
 //testfunction to test middleware without UI
@@ -82,19 +78,19 @@ void testMiddleWare()
     myID = (uint8_t) inputID;
     switch(myID)
     {
-        case 1:
+        case 0:
             myInputData.userMsg = "This is peer 1.";
             myInputData.msgLength = strlen(myInputData.userMsg);
             myInputData.newMsgReceived = true;
             break;
 
-        case 2:
+        case 1:
             myInputData.userMsg = "This is peer 2.";
             myInputData.msgLength = strlen(myInputData.userMsg);
             myInputData.newMsgReceived = true;
             break;
 
-        case 3:
+        case 2:
             myInputData.userMsg = "This is peer 3.";
             myInputData.msgLength = strlen(myInputData.userMsg);
             myInputData.newMsgReceived = true;
@@ -103,8 +99,8 @@ void testMiddleWare()
         default:
             printf("Invalid ID\n");
     }
-    createRawFrame(frameToSend, message_cnt, 0x00, myID, myInputData);
-    myInputData.newMsgReceived = false;
+    createRawFrame(frameToSend, 1, myID, 0x00, myID, myInputData);
+    //myInputData.newMsgReceived = false;
 
     storeFrame(&myStorageFrame, frameToSend);
 
@@ -119,25 +115,6 @@ void testMiddleWare()
 int main(int argc, char **argv)
 {
     clrscr();
-    pthread_t threads[NUM_THREADS];
-    int threadCreate;
-    threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
-
-    if (threadCreate != 0)
-    {
-        printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
-        exit(-1);
-    }
-    else
-    {
-        printf("---------------------------------------------\n");
-        printf("----- MULTI THREADING  ----------------------\n");
-        printf("---------------------------------------------\n");
-        printf("[X] Created Thread ID, %d\r\n", threadCreate);
-    }
-
-    // createLog(logFilename); // IN GUI FILE !!!
-    // createLog(logfilePathTesting);
     // pthread_t threads[NUM_THREADS];
     // int threadCreate;
     // threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
@@ -155,21 +132,15 @@ int main(int argc, char **argv)
     //     printf("[X] Created Thread ID, %d\r\n", threadCreate);
     // }
 
-    //createLog(logfilePathTesting);
+    createLog(logfilePathTesting);
 
     testMiddleWare();
     // testChecksum();
     // testStoreFrame();
 
-    while (1)
-    {
-      
+    middleware();
 
-        //break;
-
-    }
-
-    pthread_exit(NULL);
+    //pthread_exit(NULL);
 }
 
 /*!
@@ -198,9 +169,12 @@ void *UI_INTERFACE(void *threadID)
 
     printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
 
-    UI_MAIN();
+
+        UI_MAIN();
+    
 
     // UI_LOG();
 
     pthread_exit(NULL);
 }
+
