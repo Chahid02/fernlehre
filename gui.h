@@ -18,7 +18,7 @@
 #define NUM_THREADS 2
 #define NUM_UI_TREAD 0
 
-#define LOG(X, Y) fprintf (fp, #X ": Time:%s, File:%s(%d) " #Y  "\n", __TIMESTAMP__, __FILE__, __LINE__)
+//#define LOG(X, Y) fprintf (fp, #X ": Time:%s, File:%s(%d) " #Y  "\n", __TIMESTAMP__, __FILE__, __LINE__)
 
 /*---------------------------------------------------------*/
 /*---- TERMINAL PRINTCLEAR --------------------------------*/
@@ -47,8 +47,12 @@ void UI_START(void);
 void UI_MAIN(void);
 void GUI_SELECTION(void);
 void UI_LOG(void);
+void UI_CONF_CONFIG(void);
+void UI_READ_CONFIG(void);
+void UI_PEER_INFO(void);
 void *UI_INTERFACE(void *threadID);
 bool isIntString(char* input ) ;
 void clear_buffer();
+void timeStampFunc(void);
 
 #endif

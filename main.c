@@ -98,12 +98,12 @@ void *UI_INTERFACE(void *threadID)
 
     printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
 
-    while (1)
-    {
-        UI_START();
-    }
+
+        UI_MAIN();
+    
 
     // UI_LOG();
 
     pthread_exit(NULL);
 }
+
