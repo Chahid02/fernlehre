@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 
     error = calcChecksum(testdata, &testchecksum);
     printf("Testchecksum: %d\n", testchecksum);
-    * /
+    
         while (1)
     {
         break; // Just to test
