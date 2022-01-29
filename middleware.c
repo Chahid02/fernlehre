@@ -321,7 +321,7 @@ uint8_t logMessage(Frame msgFrame, char* filepath)
 {
     uint8_t errCode;
     printf("Writing to log...\n");
-    FILE* myFile = fopen(filepath, "a");
+    FILE* myFile = fopen(filepath, "a+");
     if(myFile == NULL)
     {
         printf("Error opening logfile!\n");

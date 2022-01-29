@@ -23,4 +23,6 @@
 
 void *UI_INTERFACE(void *threadID);
 
+void testChecksum();
+void testStoreFrame();
 #endif

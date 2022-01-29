@@ -28,8 +28,8 @@
 static int do_mutex;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
-
+// char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
+char *logfilePathTesting = logFilename;
 void testChecksum()
 {
     char testdata[BYTES_PAYLOAD];
@@ -51,10 +51,10 @@ void testStoreFrame()
     uint8_t myAck = 0x00;
     uint8_t myPeerNr = 0x01;
     uint8_t myPayloadLength = 4;
-    char myInputData[5]= "Test";
-    createRawFrame(myRawFrame , myMsgId, myAck, myPeerNr, myPayloadLength, myInputData);
+    char myInputData[5] = "Test";
+    createRawFrame(myRawFrame, myMsgId, myAck, myPeerNr, myPayloadLength, myInputData);
     printf("RawFrame: %s\n", myRawFrame);
-    for(int i = 0; i < BYTES_FRAME_TOTAL; i++)
+    for (int i = 0; i < BYTES_FRAME_TOTAL; i++)
     {
         printf("Rawframe index %d: %X\n", i, myRawFrame[i]);
     }
@@ -67,41 +67,49 @@ void testStoreFrame()
     printf("Payload: %s\n", myStorageFrame.payload);
     printf("Checksum: %d\n", myStorageFrame.checksum);
 
-    for(int i=0; i<5; i++){
+    
+     for(int i=0; i<5; i++){
         logMessage(myStorageFrame, logfilePathTesting);
     }
+    
+
+
 }
 
 int main(int argc, char **argv)
 {
     clrscr();
-    // pthread_t threads[NUM_THREADS];
-    // int threadCreate;
-    // threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
+    pthread_t threads[NUM_THREADS];
+    int threadCreate;
+    threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
 
-    // if (threadCreate != 0)
-    // {
-    //     printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
-    //     exit(-1);
-    // }
-    // else
-    // {
-    //     printf("---------------------------------------------\n");
-    //     printf("----- MULTI THREADING  ----------------------\n");
-    //     printf("---------------------------------------------\n");
-    //     printf("[X] Created Thread ID, %d\r\n", threadCreate);
-    // }
+    if (threadCreate != 0)
+    {
+        printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
+        exit(-1);
+    }
+    else
+    {
+        printf("---------------------------------------------\n");
+        printf("----- MULTI THREADING  ----------------------\n");
+        printf("---------------------------------------------\n");
+        printf("[X] Created Thread ID, %d\r\n", threadCreate);
+    }
 
-    createLog(logfilePathTesting);
-    testChecksum();
-    testStoreFrame();
+    // createLog(logFilename); // IN GUI FILE !!!
+    // createLog(logfilePathTesting);
+    // testChecksum();
+    // testStoreFrame();
 
     while (1)
     {
-        break; // Just to test
+      
+
+        //break;
+
     }
 
-    //pthread_exit(NULL);
+    pthread_exit(NULL);
 }
 
 /*!
@@ -130,12 +138,9 @@ void *UI_INTERFACE(void *threadID)
 
     printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
 
-
-        UI_MAIN();
-    
+    UI_MAIN();
 
     // UI_LOG();
 
     pthread_exit(NULL);
 }
-

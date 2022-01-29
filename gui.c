@@ -25,11 +25,13 @@
 #include <errno.h>
 
 #include "gui.h"
+#include "middleware.h"
+#include "main.h"
 
-
-char logFilename[100] = {0};
-char configFilename[100] = {0};
+extern char logFilename[100] = {0};
+extern char configFilename[100] = {0};
 int readSize;
+int LogCreateFlag = 0;
 
 bool IS_INT_STRING(char *input)
 {
@@ -183,7 +185,6 @@ void UI_PEER_INFO(void)
     }
 }
 
-
 void UI_LOG(void)
 {
     printf("---------------------------------------------\n");
@@ -199,11 +200,12 @@ void UI_LOG(void)
     {
         perror("[X] LOG FILE NOT FOUND");
         // exit(1);
+        LogCreateFlag = 0;
     }
     else
     {
         printf("[X] LOG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
-
+        LogCreateFlag = 1;
         close(file_descriptor);
     }
 }
@@ -223,23 +225,35 @@ void timeStampFunc(void)
     printf("Current date and time: %s\n", cur_time);
 }
 
-void UI_LOG_WRITE(void)
+void UI_LOG_READ(void)
 {
     printf("---------------------------------------------\n");
-    printf("----- CREATE LOG FILE -----------------------\n");
+    printf("----- READ LOG FILE -------------------------\n");
     printf("---------------------------------------------\n");
-    FILE *fp = fopen(logFilename, "a+");
-    if (fp == NULL)
+    fflush(stdout);
+    /*--------------------------------*/
+    /*---- LOG FILE Descriptor ----*/
+    int file_descriptor;
+
+    /*--------------------------------------------------------------------------------------------*/
+    char *logContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
+
+    /*--------------------------------------------------------------------------------------------*/
+    file_descriptor = open(logFilename, O_RDWR, 0777);
+    if (file_descriptor == -1)
     {
-        perror("[X] LOG FILE NOT FOUND");
-        // exit(1);
+        printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
+        printf("[X] PLEASE CONFIGURE THE PATH \r\n");
+        fflush(stdout);
     }
     else
     {
-        LOG(INFO, "File open success.");
-        LOG(WARN, "File path missing.");
-        LOG(ERROR, "File close failed.");
-        fclose(fp);
+
+        readSize = read(file_descriptor, logContent, 500);
+        printf("[X] LOGFILE @Path: %s: \n%s", logFilename, logContent);
+        fflush(stdout);
+        free(logContent);
+        close(file_descriptor);
     }
 }
 
@@ -253,7 +267,7 @@ void UI_MAIN(void)
     while (1)
     {
 
-        clrscr();
+        // clrscr();
 
         int switchNumber = (int)result;
         switch (switchNumber)
@@ -270,13 +284,15 @@ void UI_MAIN(void)
             break;
         case 4:
             UI_LOG();
+
             break;
 
         case 5:
-            UI_LOG_WRITE();
+            UI_LOG_READ();
             break;
 
-            case 6:
+        case 6:
+            createLog(logFilename);
             break;
 
         default:
@@ -300,5 +316,12 @@ void UI_MAIN(void)
                 printf("[X] Enter your CMD (1 < n < 10): #");
             }
         } while (!correct);
+
+        if (LogCreateFlag == 1)
+        {
+            createLog(logFilename);
+            testChecksum();
+            testStoreFrame();
+        }
     }
 }
