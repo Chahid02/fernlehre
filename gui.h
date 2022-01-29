@@ -32,17 +32,12 @@
 #define PEER_MAX_DEC 5
 #define consumeBuffer() while (getchar() != '\n');
 
+typedef enum {false, true} bool;
 
 #define configFile "config.txt"
 #define logFile "log.txt"
 #define configPath "../config.txt"
 #define logPath "../log.txt"
-
-
-
-extern char logFilename[100];
-extern char configFilename[100];
-extern int LogCreateFlag;
 
 /*---------------------------------------------------------*/
 /*---- PROTOTYPE DECLARATION  -----------------------------*/
@@ -58,5 +53,5 @@ void UI_PEER_INFO(void);
 void *UI_INTERFACE(void *threadID);
 void clear_buffer();
 void timeStampFunc(void);
-void UI_LOG_READ(void);
+void UI_LOG_WRITE(void);
 #endif

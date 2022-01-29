@@ -2,12 +2,10 @@
 
 
 //Global Variables:
-char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
+char buffer[BYTES_PAYLOAD+1];     //Connection between MW and UI
 uint8_t groupsize = 2;          //Amount of group members (needs to be set by UI)
 uint8_t myID = 0;               //ID of Peer (needs to be set by UI)
 uint32_t message_cnt = 0;       //message counter represents the latest message id
-
-extern inputData myInputData;
 
 int middleware( void )
 {
@@ -111,7 +109,7 @@ void getMembers(groupmember (*mygroup)[], int groupsize){
 int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
 
 
-    // Create socket
+    // Create socket file descriptor
     *mysocket = socket((*mygroup)[myID].addr.sin_family, (enum __socket_type) SOCK_DGRAM, 0);
 
     if( *mysocket == -1)
@@ -120,18 +118,11 @@ int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
         return(-1);
     }
 
-    // Bind socket
     if (bind(*mysocket, (const struct sockaddr *)&(*mygroup)[myID].addr, sizeof((*mygroup)[myID].addr)) < 0 )
     {
         printf("ERROR: Bind failed");
         return(-1);
     }
-
-    // Make socket nonblocking
-    long save_fd;
-    save_fd = fcntl(*mysocket,F_GETFL);
-    save_fd |= O_NONBLOCK;
-    fcntl(*mysocket, F_SETFL,save_fd);
 
     return(0);
 
@@ -270,7 +261,7 @@ uint8_t storeFrame(Frame* storageFrame, char rawFrame [BYTES_FRAME_TOTAL])
 }
 
 
-uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t ack, uint8_t peerNr, inputData userInputData)
+uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t ack, uint8_t peerNr, uint8_t payloadLength, char* inputData)
 {
     uint8_t errCode = 0;
     uint8_t bufferPosition = 0;
@@ -283,19 +274,19 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
     bufferPosition += BYTES_ACK;
     rawFrame[bufferPosition] = peerNr;
     bufferPosition += BYTES_PEER_NR;
-    rawFrame[bufferPosition] = userInputData.msgLength;
+    rawFrame[bufferPosition] = payloadLength;
     bufferPosition += BYTES_PAYLOAD_LENGTH;
 
     //copy inputData to payloadTemp 
-    for (uint8_t i = 0; i < userInputData.msgLength; i++)
+    for (uint8_t i = 0; i < payloadLength; i++)
     {
-        payloadTemp[i] = userInputData.userMsg[i];
+        payloadTemp[i] = inputData[i];
         //rawFrame[bufferPosition + i] = inputData[i];
     }
-    //fill the unused bytes of the payload with 0x00s
-    for (uint8_t i = 0; i < BYTES_PAYLOAD - userInputData.msgLength; i++)
+    //fill the unused bytes of the payload with zeroes
+    for (uint8_t i = 0; i < BYTES_PAYLOAD - payloadLength; i++)
     {
-        payloadTemp[userInputData.msgLength + i] = 0x00;
+        payloadTemp[payloadLength + i] = 0x00;
     }
     payloadTemp[BYTES_PAYLOAD] = '\0';
 
@@ -330,7 +321,7 @@ uint8_t logMessage(Frame msgFrame, char* filepath)
 {
     uint8_t errCode;
     printf("Writing to log...\n");
-    FILE* myFile = fopen(filepath, "a+");
+    FILE* myFile = fopen(filepath, "a");
     if(myFile == NULL)
     {
         printf("Error opening logfile!\n");
