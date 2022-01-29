@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <sys/uio.h>
+#include <fcntl.h>
 
 #define BYTES_MSG_ID 1
 #define BYTES_ACK 1

@@ -32,7 +32,6 @@
 #define PEER_MAX_DEC 5
 #define consumeBuffer() while (getchar() != '\n');
 
-typedef enum {false, true} bool;
 
 #define configFile "config.txt"
 #define logFile "log.txt"

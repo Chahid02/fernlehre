@@ -9,21 +9,7 @@
 **************************************************************
 */
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <pthread.h>
-#include <time.h>
-#include <string.h>
-#include <errno.h>
-
 #include "main.h"
-#include "gui.h"
-#include "middleware.h"
 
 static int do_mutex;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;

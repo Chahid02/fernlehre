@@ -109,7 +109,7 @@ void getMembers(groupmember (*mygroup)[], int groupsize){
 int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
 
 
-    // Create socket file descriptor
+    // Create socket
     *mysocket = socket((*mygroup)[myID].addr.sin_family, (enum __socket_type) SOCK_DGRAM, 0);
 
     if( *mysocket == -1)
@@ -118,11 +118,18 @@ int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
         return(-1);
     }
 
+    // Bind socket
     if (bind(*mysocket, (const struct sockaddr *)&(*mygroup)[myID].addr, sizeof((*mygroup)[myID].addr)) < 0 )
     {
         printf("ERROR: Bind failed");
         return(-1);
     }
+
+    // Make socket nonblocking
+    long save_fd;
+    save_fd = fcntl(*mysocket,F_GETFL);
+    save_fd |= O_NONBLOCK;
+    fcntl(*mysocket, F_SETFL,save_fd);
 
     return(0);
 
@@ -283,7 +290,7 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
         payloadTemp[i] = inputData[i];
         //rawFrame[bufferPosition + i] = inputData[i];
     }
-    //fill the unused bytes of the payload with zeroes
+    //fill the unused bytes of the payload with 0x00s
     for (uint8_t i = 0; i < BYTES_PAYLOAD - payloadLength; i++)
     {
         payloadTemp[payloadLength + i] = 0x00;
