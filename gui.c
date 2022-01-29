@@ -91,18 +91,44 @@ void UI_START(void)
     /*--------------------------------------------------------------------------------------------*/
 
     GUI_SELECTION();
+    fflush(stdout);
 
     /*--------------------------------------------------------------------------------------------*/
-
+    printf("[X] NOTE INPUT BUFFER IS BROKEN !!! PLZ DONT RUN NUMBER 4 FIRST !!! !\r\n");
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
     printf("[X] Enter your CMD (1 < n < 10): #");
-    
-    int CMD_NR = 0;
+    fflush(stdout);
 
-    while(!scanf("%d",&CMD_NR) && getchar()); // DONT CLICK ON THE FIRST LOOP 2 Times CASE 4 !!!!!
-    consumeBuffer();
+    // while(!scanf("%d\n",&CMD_NR) && getchar()); // DONT CLICK ON THE FIRST LOOP 2 Times CASE 4 !!!!!
+    // while(scanf("%d%1[\n]", &CMD_NR, (char [2]){ 0 }) < 2)
+    // consumeBuffer();
 
-    printf("[X] VALUE:%d \r\n", CMD_NR);
+
+    /*
+    INPUT BUFFFER IS BROKEN AS HELL !!!!!!!!!!
+    */
+    char s[10];
+    char *end;
+    bool correct = false;
+    int result;
+
+    do
+    {
+        scanf("%s", s);
+        if (isIntString(s))
+        {
+            correct = true;
+            result = strtol(s, &end, 10);
+            break;
+        }
+        else
+        {
+            printf("[X] Enter your CMD (1 < n < 10): #");
+        }
+    } while (!correct);
+    int CMD_NR = result;
+
+    // clear_buffer();
 
     /*-----------------------*/
     /*---- SCREEN CLEAR ----*/
@@ -113,6 +139,7 @@ void UI_START(void)
     /*---------------------------------*/
     /*---- UI INTERFACE SELECTION -----*/
     /*--------------------------------------------------------------------------------------------*/
+
     switch (CMD_NR)
     {
 
@@ -122,7 +149,7 @@ void UI_START(void)
         printf("----- CONFIGURE CONFIG FILE -----------------\n");
         printf("---------------------------------------------\n");
         printf("[X] Enter the Path of the Config File:");
-
+        fflush(stdout);
         scanf("%s", filename) == EOF;
         // snprintf(filename, sizeof(filename), "%d", configPath);
         file_descriptor = open(filename, O_RDWR | O_CREAT, 0777);
@@ -135,10 +162,12 @@ void UI_START(void)
         else
         {
             printf("[X] CONFIG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
+            fflush(stdout);
         }
 
         // string end char '\0'
         configContent[499] = '\0';
+        close(file_descriptor);
         break;
 
     case 2:
@@ -146,15 +175,13 @@ void UI_START(void)
         printf("---------------------------------------------\n");
         printf("----- CONFIG FILE ---------------------------\n");
         printf("---------------------------------------------\n");
+        fflush(stdout);
         file_descriptor = open(filename, O_RDWR | O_CREAT, 0777);
         if (file_descriptor == -1)
         {
             printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
             printf("[X] PLEASE CONFIGURE THE PATH \r\n");
-            /*
-            perror("[X] [X] CONFIG PATH NOT CONFIGURED !!!");
-            exit(1);
-            */
+            fflush(stdout);
 
             break;
         }
@@ -165,6 +192,7 @@ void UI_START(void)
             printf("[X] Reading file : %s\n", configPath);
             printf("[X] Number of bytes written in file %s: %d\r\n", configPath, readSize);
             printf("[X] configContent:\n%s", configContent);
+            fflush(stdout);
             free(configContent);
         }
         close(file_descriptor);
@@ -175,16 +203,14 @@ void UI_START(void)
         printf("---------------------------------------------\n");
         printf("----- PEER INFORMATION ----------------------\n");
         printf("---------------------------------------------\n");
+        fflush(stdout);
         file_descriptor = open(filename, O_RDONLY, 0777);
         if (file_descriptor == -1)
         {
             printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
             printf("[X] PLEASE CONFIGURE THE PATH \r\n");
+            fflush(stdout);
             break;
-            /*
-            perror("[X] [X] CONFIG PATH NOT CONFIGURED !!!");
-            exit(1);
-            */
 
             break;
         }
@@ -209,32 +235,32 @@ void UI_START(void)
 
                 sscanf(configContent, "%s%s%s%s", nr, ip, port, log);
                 printf("[X] Reading:%s--------%s--------%s--%s\n", nr, ip, port, log);
+                fflush(stdout);
 
                 searchNewLine = strstr(configContent, searchNr);
                 sscanf(searchNewLine, "%s%s%s%s", nr, ip, port, log);
                 printf("[X] PEER %s: %s--%s--%s--%s--@pos%ld\n", searchNr, nr, ip, port, log, searchNewLine - configContent);
-
-                /* //Just 4 Testing
-
-                char logPeer5[100];
-                snprintf(logPeer5, sizeof(logPeer5), "%s--%s--%s--%s", nr, ip, port, log);
-                printf("[X] PeerNr5 : %s\n", logPeer5);
-
-                */
+                fflush(stdout);
             }
             else
             {
 
                 printf("[X] WRONG PEER #NR !!!");
+                fflush(stdout);
             }
             close(file_descriptor);
         }
         break;
-    case (4):
-    UI_LOG();
+
+    case 4:
+
+        UI_LOG();
         break;
 
     default:
+        printf("WRONG NUMBER !!!");
+        fflush(stdout);
+
         break;
     }
 
@@ -261,7 +287,7 @@ void GUI_SELECTION(void)
     printf("[X] NUMBER:9 -----> SENT MESSAGES \n");
     printf("[X] NUMBER:10 ----> RECEIVED MESSAGES \n");
     printf("---------------------------------------------\n");
-
+    fflush(stdout);
 }
 
 void UI_LOG(void)
@@ -269,6 +295,7 @@ void UI_LOG(void)
     printf("---------------------------------------------\n");
     printf("----- CREATE LOG FILE -----------------------\n");
     printf("---------------------------------------------\n");
+    fflush(stdout);
 
     FILE *fp = fopen("log.txt", "w");
 
@@ -277,4 +304,23 @@ void UI_LOG(void)
     LOG(ERROR, "File close failed.");
 
     fclose(fp);
+}
+
+bool isIntString(char *input)
+{
+    int i;
+    for (i = 0; i < strlen(input); i++)
+    {
+        if (input[i] < '0' || input[i] > '9')
+        {
+            return false;
+        }
+    }
+    return true;
+}
+void clear_buffer()
+{
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF)
+        ;
 }

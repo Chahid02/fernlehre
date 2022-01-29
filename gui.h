@@ -32,6 +32,7 @@
 #define PEER_MAX_DEC 5
 #define consumeBuffer() while (getchar() != '\n');
 
+typedef enum {false, true} bool;
 
 #define configFile "config.txt"
 #define logFile "log.txt"
@@ -47,6 +48,7 @@ void UI_MAIN(void);
 void GUI_SELECTION(void);
 void UI_LOG(void);
 void *UI_INTERFACE(void *threadID);
-
+bool isIntString(char* input ) ;
+void clear_buffer();
 
 #endif

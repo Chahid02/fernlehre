@@ -25,7 +25,6 @@
 #include "gui.h"
 #include "middleware.h"
 
-
 static int do_mutex;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -48,7 +47,7 @@ int main(int argc, char **argv)
         printf("---------------------------------------------\n");
         printf("[X] Created Thread ID, %d\r\n", threadCreate);
     }
-    
+
     char testdata[32] = {0x01};
     uint16_t testchecksum = 0;
     uint8_t error = 0;
@@ -57,15 +56,14 @@ int main(int argc, char **argv)
 
     error = calcChecksum(testdata, &testchecksum);
     printf("Testchecksum: %d\n", testchecksum);
-    while (1)
+    * /
+        while (1)
     {
         break; // Just to test
     }
 
     pthread_exit(NULL);
 }
-
-
 
 /*!
 **************************************************************
@@ -92,18 +90,13 @@ void *UI_INTERFACE(void *threadID)
     thread_ID = (long)threadID;
 
     printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
-    
-   while(1){
-     UI_START();  
-   }
-  
-    //UI_LOG();
 
+    while (1)
+    {
+        UI_START();
+    }
 
-  
- 
-
-
+    // UI_LOG();
 
     pthread_exit(NULL);
 }

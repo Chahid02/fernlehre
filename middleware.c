@@ -1,4 +1,4 @@
-#include "middleware.h"
+ #include "middleware.h"
 
 int middleware( void )
 {
@@ -224,3 +224,4 @@ uint8_t calcChecksum(char* data, uint16_t* checksumBuffer)
 
     return errCode;
 }
+ 
