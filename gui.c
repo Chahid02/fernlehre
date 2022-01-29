@@ -26,6 +26,7 @@
 
 #include "gui.h"
 
+
 char logFilename[100] = {0};
 char configFilename[100] = {0};
 int readSize;
@@ -82,14 +83,13 @@ void UI_CONF_CONFIG(void)
     if (file_descriptor == -1)
     {
         perror("[X] CONFIG FILE NOT FOUND");
-        //exit(1);
+        // exit(1);
     }
     else
     {
         printf("[X] CONFIG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
         close(file_descriptor);
     }
-
 }
 
 void UI_READ_CONFIG(void)
@@ -124,7 +124,6 @@ void UI_READ_CONFIG(void)
         free(configContent);
         close(file_descriptor);
     }
-
 }
 
 void UI_PEER_INFO(void)
@@ -184,6 +183,7 @@ void UI_PEER_INFO(void)
     }
 }
 
+
 void UI_LOG(void)
 {
     printf("---------------------------------------------\n");
@@ -198,15 +198,14 @@ void UI_LOG(void)
     if (file_descriptor == -1)
     {
         perror("[X] LOG FILE NOT FOUND");
-        //exit(1);
+        // exit(1);
     }
     else
     {
         printf("[X] LOG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
-    
+
         close(file_descriptor);
     }
-
 }
 
 void timeStampFunc(void)
@@ -233,20 +232,16 @@ void UI_LOG_WRITE(void)
     if (fp == NULL)
     {
         perror("[X] LOG FILE NOT FOUND");
-        //exit(1);
+        // exit(1);
     }
     else
     {
-    LOG(INFO, "File open success.");
-    LOG(WARN, "File path missing.");
-    LOG(ERROR, "File close failed.");
-    fclose(fp);
+        LOG(INFO, "File open success.");
+        LOG(WARN, "File path missing.");
+        LOG(ERROR, "File close failed.");
+        fclose(fp);
     }
-   
 }
-
-
-
 
 void UI_MAIN(void)
 {
@@ -277,8 +272,11 @@ void UI_MAIN(void)
             UI_LOG();
             break;
 
-            case 5:
+        case 5:
             UI_LOG_WRITE();
+            break;
+
+            case 6:
             break;
 
         default:

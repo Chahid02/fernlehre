@@ -51,7 +51,6 @@ void UI_CONF_CONFIG(void);
 void UI_READ_CONFIG(void);
 void UI_PEER_INFO(void);
 void *UI_INTERFACE(void *threadID);
-bool IS_INT_STRING(char *input);
 void clear_buffer();
 void timeStampFunc(void);
 void UI_LOG_WRITE(void);
