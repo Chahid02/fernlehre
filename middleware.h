@@ -17,17 +17,21 @@
 #include "main.h"
 
 #define BYTES_MSG_ID 1
+#define BYTES_SENDER_ID 1
 #define BYTES_ACK 1
 #define BYTES_PEER_NR 1
 #define BYTES_PAYLOAD_LENGTH 1
 #define BYTES_PAYLOAD 32
 #define BYTES_CHECKSUM 2
 #define BYTES_TERM 1
-#define BYTES_FRAME_TOTAL (BYTES_MSG_ID + BYTES_ACK + BYTES_PEER_NR + BYTES_PAYLOAD + BYTES_CHECKSUM + BYTES_TERM) //38 Bytes total
+#define BYTES_FRAME_TOTAL (BYTES_MSG_ID + BYTES_SENDER_ID + BYTES_ACK + BYTES_PEER_NR + BYTES_PAYLOAD + BYTES_CHECKSUM + BYTES_TERM) //39 Bytes total
+
+#define MAX_PEERS 5
 
 typedef struct
 {
     uint8_t msgId;
+    uint8_t sndId;
     uint8_t ack;
     uint8_t peerNr;
     uint8_t payloadLength;
@@ -56,6 +60,7 @@ extern char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
 extern uint8_t groupsize;        //Amount of group members (needs to be set by UI)
 extern uint8_t myID;              //ID of Peer (needs to be set by UI)
 extern uint32_t message_cnt;       //message counter represents the latest message id
+extern groupmember mygroup[MAX_PEERS];
 
 int middleware(void);
 int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, char *payload);
@@ -81,7 +86,7 @@ uint8_t storeFrame(Frame* storageFrame, char rawFrame[BYTES_FRAME_TOTAL]);
 /*
 creates a raw frame for sending according to the frame format, with the given input data
 */
-uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL] , uint8_t msgId, uint8_t ack, uint8_t peerNr, inputData userInputData);
+uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL] , uint8_t msgId, uint8_t sndId, uint8_t ack, uint8_t peerNr, inputData userInputData);
 
 /*
 creates logfile if it doesn't exist, or clears the old one if it exists, and writes header information

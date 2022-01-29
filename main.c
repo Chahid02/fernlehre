@@ -42,11 +42,12 @@ void testStoreFrame()
     inputData myInputData;
     char myRawFrame[BYTES_FRAME_TOTAL];
     uint8_t myMsgId = 0x01;
+    uint8_t mySndId = 0x01;
     uint8_t myAck = 0x00;
     uint8_t myPeerNr = 0x01;
     myInputData.msgLength = 4;
     myInputData.userMsg= "Test";
-    createRawFrame(myRawFrame , myMsgId, myAck, myPeerNr, myInputData);
+    createRawFrame(myRawFrame , myMsgId, mySndId, myAck, myPeerNr, myInputData);
     myInputData.newMsgReceived = false;
     printf("RawFrame: %s\n", myRawFrame);
     for(int i = 0; i < BYTES_FRAME_TOTAL; i++)
@@ -98,7 +99,7 @@ void testMiddleWare()
         default:
             printf("Invalid ID\n");
     }
-    createRawFrame(frameToSend, message_cnt+1, 0x01, myID, myInputData);
+    createRawFrame(frameToSend, 1, myID, 0x00, myID, myInputData);
     //myInputData.newMsgReceived = false;
 
     storeFrame(&myStorageFrame, frameToSend);
