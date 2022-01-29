@@ -20,6 +20,7 @@
 #include <time.h>
 #include <string.h>
 #include <errno.h>
+#include <stdbool.h>
 
 #include "main.h"
 #include "gui.h"
