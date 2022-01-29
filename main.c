@@ -16,6 +16,13 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
 
+inputData myInputData = {.newMsgReceived = false};
+
+extern char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
+extern uint8_t groupsize;        //Amount of group members (needs to be set by UI)
+extern uint8_t myID;              //ID of Peer (needs to be set by UI)
+extern uint32_t message_cnt;       //message counter represents the latest message id
+
 void testChecksum()
 {
     char testdata[BYTES_PAYLOAD];
@@ -32,13 +39,15 @@ void testChecksum()
 void testStoreFrame()
 {
     Frame myStorageFrame;
+    inputData myInputData;
     char myRawFrame[BYTES_FRAME_TOTAL];
     uint8_t myMsgId = 0x01;
     uint8_t myAck = 0x00;
     uint8_t myPeerNr = 0x01;
-    uint8_t myPayloadLength = 4;
-    char myInputData[5]= "Test";
-    createRawFrame(myRawFrame , myMsgId, myAck, myPeerNr, myPayloadLength, myInputData);
+    myInputData.msgLength = 4;
+    myInputData.userMsg= "Test";
+    createRawFrame(myRawFrame , myMsgId, myAck, myPeerNr, myInputData);
+    myInputData.newMsgReceived = false;
     printf("RawFrame: %s\n", myRawFrame);
     for(int i = 0; i < BYTES_FRAME_TOTAL; i++)
     {
@@ -56,6 +65,50 @@ void testStoreFrame()
     for(int i=0; i<5; i++){
         logMessage(myStorageFrame, logfilePathTesting);
     }
+}
+
+//testfunction to test middleware without UI
+void testMiddleWare()
+{
+    Frame myStorageFrame;
+    int inputID;
+    printf("Enter group ID:\n");
+    scanf("%d", &inputID);
+    myID = (uint8_t) inputID;
+    switch(myID)
+    {
+        case 1:
+            myInputData.userMsg = "This is peer 1.";
+            myInputData.msgLength = strlen(myInputData.userMsg);
+            myInputData.newMsgReceived = true;
+            break;
+
+        case 2:
+            myInputData.userMsg = "This is peer 2.";
+            myInputData.msgLength = strlen(myInputData.userMsg);
+            myInputData.newMsgReceived = true;
+            break;
+
+        case 3:
+            myInputData.userMsg = "This is peer 3.";
+            myInputData.msgLength = strlen(myInputData.userMsg);
+            myInputData.newMsgReceived = true;
+            break;
+
+        default:
+            printf("Invalid ID\n");
+    }
+    createRawFrame(frameToSend, message_cnt, 0x00, myID, myInputData);
+    myInputData.newMsgReceived = false;
+
+    storeFrame(&myStorageFrame, frameToSend);
+
+    printf("MsgID: %d\n", myStorageFrame.msgId);
+    printf("ACK: %d\n", myStorageFrame.ack);
+    printf("PeerNr: %d\n", myStorageFrame.peerNr);
+    printf("PayloadLength: %d\n", myStorageFrame.payloadLength);
+    printf("Payload: %s\n", myStorageFrame.payload);
+    printf("Checksum: %d\n", myStorageFrame.checksum);
 }
 
 int main(int argc, char **argv)
@@ -79,8 +132,10 @@ int main(int argc, char **argv)
     // }
 
     createLog(logfilePathTesting);
-    testChecksum();
-    testStoreFrame();
+
+    testMiddleWare();
+    // testChecksum();
+    // testStoreFrame();
 
     while (1)
     {

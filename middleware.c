@@ -2,10 +2,12 @@
 
 
 //Global Variables:
-char buffer[BYTES_PAYLOAD+1];     //Connection between MW and UI
+char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
 uint8_t groupsize = 2;          //Amount of group members (needs to be set by UI)
 uint8_t myID = 0;               //ID of Peer (needs to be set by UI)
 uint32_t message_cnt = 0;       //message counter represents the latest message id
+
+extern inputData myInputData;
 
 int middleware( void )
 {
@@ -261,7 +263,7 @@ uint8_t storeFrame(Frame* storageFrame, char rawFrame [BYTES_FRAME_TOTAL])
 }
 
 
-uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t ack, uint8_t peerNr, uint8_t payloadLength, char* inputData)
+uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t ack, uint8_t peerNr, inputData userInputData)
 {
     uint8_t errCode = 0;
     uint8_t bufferPosition = 0;
@@ -274,19 +276,19 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
     bufferPosition += BYTES_ACK;
     rawFrame[bufferPosition] = peerNr;
     bufferPosition += BYTES_PEER_NR;
-    rawFrame[bufferPosition] = payloadLength;
+    rawFrame[bufferPosition] = userInputData.msgLength;
     bufferPosition += BYTES_PAYLOAD_LENGTH;
 
     //copy inputData to payloadTemp 
-    for (uint8_t i = 0; i < payloadLength; i++)
+    for (uint8_t i = 0; i < userInputData.msgLength; i++)
     {
-        payloadTemp[i] = inputData[i];
+        payloadTemp[i] = userInputData.userMsg[i];
         //rawFrame[bufferPosition + i] = inputData[i];
     }
     //fill the unused bytes of the payload with 0x00s
-    for (uint8_t i = 0; i < BYTES_PAYLOAD - payloadLength; i++)
+    for (uint8_t i = 0; i < BYTES_PAYLOAD - userInputData.msgLength; i++)
     {
-        payloadTemp[payloadLength + i] = 0x00;
+        payloadTemp[userInputData.msgLength + i] = 0x00;
     }
     payloadTemp[BYTES_PAYLOAD] = '\0';
 
