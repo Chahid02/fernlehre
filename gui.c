@@ -82,15 +82,14 @@ void UI_CONF_CONFIG(void)
     if (file_descriptor == -1)
     {
         perror("[X] CONFIG FILE NOT FOUND");
-        exit(1);
+        //exit(1);
     }
     else
     {
         printf("[X] CONFIG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
-        fflush(stdout);
+        close(file_descriptor);
     }
 
-    close(file_descriptor);
 }
 
 void UI_READ_CONFIG(void)
@@ -123,8 +122,9 @@ void UI_READ_CONFIG(void)
         printf("[X] configContent:\n%s", configContent);
         fflush(stdout);
         free(configContent);
+        close(file_descriptor);
     }
-    close(file_descriptor);
+
 }
 
 void UI_PEER_INFO(void)
@@ -198,17 +198,15 @@ void UI_LOG(void)
     if (file_descriptor == -1)
     {
         perror("[X] LOG FILE NOT FOUND");
-        exit(1);
+        //exit(1);
     }
     else
     {
         printf("[X] LOG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
-        fflush(stdout);
+    
+        close(file_descriptor);
     }
 
-    // string end char '\0'
-
-    close(file_descriptor);
 }
 
 void timeStampFunc(void)
@@ -225,6 +223,30 @@ void timeStampFunc(void)
 
     printf("Current date and time: %s\n", cur_time);
 }
+
+void UI_LOG_WRITE(void)
+{
+    printf("---------------------------------------------\n");
+    printf("----- CREATE LOG FILE -----------------------\n");
+    printf("---------------------------------------------\n");
+    FILE *fp = fopen(logFilename, "a+");
+    if (fp == NULL)
+    {
+        perror("[X] LOG FILE NOT FOUND");
+        //exit(1);
+    }
+    else
+    {
+    LOG(INFO, "File open success.");
+    LOG(WARN, "File path missing.");
+    LOG(ERROR, "File close failed.");
+    fclose(fp);
+    }
+   
+}
+
+
+
 
 void UI_MAIN(void)
 {
@@ -253,6 +275,10 @@ void UI_MAIN(void)
             break;
         case 4:
             UI_LOG();
+            break;
+
+            case 5:
+            UI_LOG_WRITE();
             break;
 
         default:
