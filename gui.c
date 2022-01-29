@@ -20,6 +20,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <pthread.h>
+#include <time.h>
+#include <string.h>
+#include <errno.h>
 
 /*------------------------*/
 /*---- PRIVATE INCLUDE----*/
@@ -45,9 +48,6 @@ int logFlag;
 /*------------------------*/
 void UI_MAIN(void)
 {
-
-        UI_START();
-    
 }
 
 /*!
@@ -93,14 +93,14 @@ void UI_START(void)
     GUI_SELECTION();
 
     /*--------------------------------------------------------------------------------------------*/
-    int CMD_NR;
+
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
     printf("[X] Enter your CMD (1 < n < 10): #");
+    
+    int CMD_NR = 0;
 
-    do
-    {
-  
-    } while (scanf("%d", &CMD_NR) <= 0 && getchar());
+    while(!scanf("%d",&CMD_NR) && getchar()); // DONT CLICK ON THE FIRST LOOP 2 Times CASE 4 !!!!!
+    consumeBuffer();
 
     printf("[X] VALUE:%d \r\n", CMD_NR);
 
@@ -115,15 +115,15 @@ void UI_START(void)
     /*--------------------------------------------------------------------------------------------*/
     switch (CMD_NR)
     {
+
     case 1:
-    {
+
         printf("---------------------------------------------\n");
         printf("----- CONFIGURE CONFIG FILE -----------------\n");
         printf("---------------------------------------------\n");
         printf("[X] Enter the Path of the Config File:");
 
         scanf("%s", filename) == EOF;
-        fflush(stdin);
         // snprintf(filename, sizeof(filename), "%d", configPath);
         file_descriptor = open(filename, O_RDWR | O_CREAT, 0777);
 
@@ -140,9 +140,9 @@ void UI_START(void)
         // string end char '\0'
         configContent[499] = '\0';
         break;
-    }
+
     case 2:
-    {
+
         printf("---------------------------------------------\n");
         printf("----- CONFIG FILE ---------------------------\n");
         printf("---------------------------------------------\n");
@@ -165,16 +165,17 @@ void UI_START(void)
             printf("[X] Reading file : %s\n", configPath);
             printf("[X] Number of bytes written in file %s: %d\r\n", configPath, readSize);
             printf("[X] configContent:\n%s", configContent);
+            free(configContent);
         }
-
+        close(file_descriptor);
         break;
-    }
+
     case 3:
-    {
+
         printf("---------------------------------------------\n");
         printf("----- PEER INFORMATION ----------------------\n");
         printf("---------------------------------------------\n");
-        file_descriptor = open(filename, O_RDWR | O_CREAT, 0777);
+        file_descriptor = open(filename, O_RDONLY, 0777);
         if (file_descriptor == -1)
         {
             printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
@@ -223,25 +224,19 @@ void UI_START(void)
             }
             else
             {
-                fflush(stdin);
+
                 printf("[X] WRONG PEER #NR !!!");
             }
+            close(file_descriptor);
         }
         break;
-    }
-    case 4:
-    {
+    case (4):
+    UI_LOG();
         break;
-    }
+
     default:
-    {
         break;
     }
-    }
-    fflush(stdin);
-    logFlag = 0;
-    // free buffer of configContent
-    free(configContent);
 
     /*-------------------------*/
     /*---- Close Programm -----*/
@@ -266,17 +261,20 @@ void GUI_SELECTION(void)
     printf("[X] NUMBER:9 -----> SENT MESSAGES \n");
     printf("[X] NUMBER:10 ----> RECEIVED MESSAGES \n");
     printf("---------------------------------------------\n");
+
 }
 
 void UI_LOG(void)
 {
+    printf("---------------------------------------------\n");
+    printf("----- CREATE LOG FILE -----------------------\n");
+    printf("---------------------------------------------\n");
 
-    FILE *fp = fopen("log.txt", "a+");
+    FILE *fp = fopen("log.txt", "w");
 
     LOG(INFO, "File open success.");
     LOG(WARN, "File path missing.");
     LOG(ERROR, "File close failed.");
 
     fclose(fp);
-    return;
 }

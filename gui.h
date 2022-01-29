@@ -30,7 +30,7 @@
 /*---------------------------------------------------------*/
 #define PEER_NR "#5"
 #define PEER_MAX_DEC 5
-
+#define consumeBuffer() while (getchar() != '\n');
 
 
 #define configFile "config.txt"
@@ -47,4 +47,6 @@ void UI_MAIN(void);
 void GUI_SELECTION(void);
 void UI_LOG(void);
 void *UI_INTERFACE(void *threadID);
+
+
 #endif

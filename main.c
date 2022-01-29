@@ -17,7 +17,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <pthread.h>
-#include <stdint.h>
+#include <time.h>
+#include <string.h>
+#include <errno.h>
 
 #include "main.h"
 #include "gui.h"
@@ -95,15 +97,14 @@ void *UI_INTERFACE(void *threadID)
 
     printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
     
-    while(1){
-        pthread_mutex_lock(&mutex);
-    UI_MAIN();
-     pthread_mutex_unlock(&mutex);
-    pthread_mutex_lock(&mutex);
-    UI_LOG();
-    pthread_mutex_unlock(&mutex);
+   while(1){
+     UI_START();  
+   }
+  
+    //UI_LOG();
 
-    }
+
+  
  
 
 
