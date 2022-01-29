@@ -1,4 +1,11 @@
- #include "middleware.h"
+#include "middleware.h"
+
+
+//Global Variables:
+char buffer[BYTES_PAYLOAD];     //Connection between MW and UI
+uint8_t groupsize = 2;          //Amount of group members (needs to be set by UI)
+uint8_t myID = 0;               //ID of Peer (needs to be set by UI)
+uint32_t message_cnt = 0;       //message counter represents the latest message id
 
 int middleware( void )
 {
@@ -32,10 +39,10 @@ int middleware( void )
     ssize_t bytes_recv;
 
 
-    char *message[MESSAGESIZE];
+    char *message[BYTES_FRAME_TOTAL];
     message[0]='\0';
 
-    char *received[MESSAGESIZE];
+    char *received[BYTES_FRAME_TOTAL];
     received[0]='\0';
 
 
@@ -173,7 +180,7 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
 
     struct timeval mytimeout = {0,100}; //Wait for acknoledgement 0s 100ms
 
-    char *received[MESSAGESIZE];
+    char *received[BYTES_FRAME_TOTAL];
     received[0]='\0';
     
     //TODO: waiting for message only a limited time doesnt work (select function)
@@ -183,7 +190,7 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
         printf("ERROR: Wait for acknoledgement failed!");
     }
     
-    if (recvfrom(*mysocket, received, MESSAGESIZE, 0, (const struct sockaddr *)&(*mygroup)[peerid].addr, sizeof((*mygroup)[peerid].addr)) == (ssize_t)-1)
+    if (recvfrom(*mysocket, received, BYTES_FRAME_TOTAL, 0, (const struct sockaddr *)&(*mygroup)[peerid].addr, sizeof((*mygroup)[peerid].addr)) == (ssize_t)-1)
     {
         printf("ERROR: Could not receive!");
     }
@@ -200,7 +207,7 @@ int recvgroup(int *mysocket, char *message_recv){
     ssize_t bytes_recv;
     message_recv[0] = '\0';
 
-    bytes_recv = recv(*mysocket,message_recv,(size_t)MESSAGESIZE-1,0);
+    bytes_recv = recv(*mysocket,message_recv,(size_t)BYTES_FRAME_TOTAL-1,0);
 
     return (0);
 }
@@ -215,13 +222,86 @@ uint8_t calcChecksum(char* data, uint16_t* checksumBuffer)
         uint16_t dataBlock;
         memcpy(&dataBlock, data + i, 2);
         checksum += dataBlock;
-        if(checksum > 0xFF)
+        //printf("Checksum before bitshift: %d \n", checksum);
+        if(checksum > 0xFFFF)
         {
-            checksum -= 0xFF;
+            checksum -= 0xFFFF;
         }
+        //printf("Checksum after bitshift: %d\n", checksum);
     }
     *checksumBuffer = ~checksum;
 
     return errCode;
 }
- 
+
+uint8_t storeFrame(Frame* storageFrame, char* rawFrame)
+{
+    uint8_t errCode = 0;
+    uint8_t bufferPosition = 0;
+
+    if(rawFrame == NULL || storageFrame == NULL)
+    {
+        printf("NULL Pointer! \n");
+    }
+
+    if(strlen(rawFrame) != BYTES_FRAME_TOTAL)
+    {
+        printf("Invalid frame length! \n");
+    }
+
+    memcpy(&(storageFrame->msgId), rawFrame, BYTES_MSG_ID);
+    bufferPosition = BYTES_MSG_ID;
+    memcpy(&(storageFrame->ack), rawFrame + bufferPosition, BYTES_ACK);
+    bufferPosition += BYTES_ACK;
+    memcpy(&(storageFrame->peerNr), rawFrame + bufferPosition, BYTES_PEER_NR);
+    bufferPosition += BYTES_PEER_NR;
+    memcpy(&(storageFrame->payloadLength), rawFrame + bufferPosition, BYTES_PAYLOAD_LENGTH);
+    bufferPosition += BYTES_PAYLOAD_LENGTH;
+    memcpy(&(storageFrame->payload), rawFrame + bufferPosition, BYTES_PAYLOAD);
+    bufferPosition += BYTES_PAYLOAD;
+    storageFrame->payload[BYTES_PAYLOAD] = '\0';
+    memcpy(&(storageFrame->checksum), rawFrame + bufferPosition, BYTES_CHECKSUM);
+
+    return errCode;
+}
+
+
+uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t ack, uint8_t peerNr, uint8_t payloadLength, char* inputData)
+{
+    uint8_t errCode = 0;
+    uint8_t bufferPosition = 0;
+    char payloadTemp[BYTES_PAYLOAD + 1];
+    uint16_t checksum;
+
+    rawFrame[0] = msgId;
+    bufferPosition += BYTES_MSG_ID;
+    rawFrame[bufferPosition] = ack;
+    bufferPosition += BYTES_ACK;
+    rawFrame[bufferPosition] = peerNr;
+    bufferPosition += BYTES_PEER_NR;
+    rawFrame[bufferPosition] = payloadLength;
+    bufferPosition += BYTES_PAYLOAD_LENGTH;
+
+    //copy inputData to payloadTemp 
+    for (uint8_t i = 0; i < payloadLength; i++)
+    {
+        payloadTemp[i] = inputData[i];
+        //rawFrame[bufferPosition + i] = inputData[i];
+    }
+    //fill the unused bytes of the payload with zeroes
+    for (uint8_t i = 0; i < BYTES_PAYLOAD - payloadLength; i++)
+    {
+        payloadTemp[payloadLength + i] = 0x00;
+    }
+    payloadTemp[BYTES_PAYLOAD] = '\0';
+
+    //copy all data bytes except the terminating char to rawFrame
+    memcpy(rawFrame+bufferPosition, payloadTemp, BYTES_PAYLOAD);
+
+    bufferPosition += BYTES_PAYLOAD;
+    errCode = calcChecksum(payloadTemp, &checksum);
+    memcpy(rawFrame+bufferPosition, &checksum, BYTES_CHECKSUM);
+
+
+    return errCode;
+}

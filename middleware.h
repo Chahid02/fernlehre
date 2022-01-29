@@ -13,11 +13,24 @@
 #include <stdbool.h>
 #include <sys/uio.h>
 
-
+#define BYTES_MSG_ID 1
+#define BYTES_ACK 1
+#define BYTES_PEER_NR 1
+#define BYTES_PAYLOAD_LENGTH 1
 #define BYTES_PAYLOAD 32
-#define MESSAGESIZE 1+1+1+BYTES_PAYLOAD+2
+#define BYTES_CHECKSUM 2
+#define BYTES_TERM 1
+#define BYTES_FRAME_TOTAL (BYTES_MSG_ID + BYTES_ACK + BYTES_PEER_NR + BYTES_PAYLOAD + BYTES_CHECKSUM + BYTES_TERM) //38 Bytes total
 
-//Typedefs:
+typedef struct
+{
+    uint8_t msgId;
+    uint8_t ack;
+    uint8_t peerNr;
+    uint8_t payloadLength;
+    char payload[BYTES_PAYLOAD + 1];
+    uint8_t checksum;
+}Frame;
 
 typedef struct gm
 {   
@@ -27,27 +40,12 @@ typedef struct gm
     struct sockaddr_in addr;    //socket adress of groupmember
 }groupmember;
 
-typedef struct mes
-{
-    uint8_t id;         //Message ID
-    uint8_t ack;        //Acknoledge (1/0)
-    uint8_t peer;       //peer id
-    char payload[32];   //message
-    uint16_t cs;        //checksum
-}message;
 
 //Global Variables:
-char buffer[BYTES_PAYLOAD];     //Connection between MW and UI
-uint8_t groupsize = 2;          //Amount of group members (needs to be set by UI)
-uint8_t myID = 0;               //ID of Peer (needs to be set by UI)
-uint32_t message_cnt = 0;       //message counter represents the latest message id
-
-
-/*
-data: payload for which the checksum be calculated
-checksumBuffer: Pointer to data where checksum will be stored
-length: length of data in bytes
-*/
+extern char buffer[BYTES_PAYLOAD];     //Connection between MW and UI
+extern uint8_t groupsize;        //Amount of group members (needs to be set by UI)
+extern uint8_t myID;              //ID of Peer (needs to be set by UI)
+extern uint32_t message_cnt;       //message counter represents the latest message id
 
 int middleware(void);
 int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, char *payload);
@@ -57,6 +55,18 @@ void getMembers(groupmember (*mygroup)[], int groupsize);
 int setupMW(groupmember (*mygroup)[],int myID, int *mysocket);
 groupmember parsemes(char *message);
 int ACK(groupmember (*mygroup)[], int *mysocket, int peerid); 
+
+/*
+data: payload for which the checksum be calculated
+checksumBuffer: Pointer to data where checksum will be stored
+length: length of data in bytes
+*/
 uint8_t calcChecksum(char* data, uint16_t* checksumBuffer);
+
+uint8_t storeFrame(Frame* storageFrame, char* rawFrame);
+
+uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL] , uint8_t msgId, uint8_t ack, uint8_t peerNr, uint8_t payloadLength, char* inputData);
+
+
 
 #endif
