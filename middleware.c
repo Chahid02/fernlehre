@@ -3,8 +3,8 @@
 
 //Global Variables:
 char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
-uint8_t groupsize = 2;          //Amount of group members (needs to be set by UI)
-uint8_t myID = 0;               //ID of Peer (needs to be set by UI)
+uint8_t groupsize = 3;          //Amount of group members (needs to be set by UI)
+uint8_t myID = 99;               //ID of Peer (needs to be set by UI)
 uint32_t message_cnt = 0;       //message counter represents the latest message id
 
 extern inputData myInputData;
@@ -12,8 +12,11 @@ extern inputData myInputData;
 int middleware( void )
 {
 
+    //TODO: Wait for ID input
+
 //----------------------------------------------------------------------------------
 // Get Informations from UI (about Group) -> IP, Port, ID-Number
+
 
     groupmember mygroup[groupsize];
     getMembers(&mygroup, groupsize);
@@ -57,8 +60,12 @@ int middleware( void )
 
 //----------------------------------------------------------------------------------
 // Send Message to group
-
-        sendgroup(&mygroup,groupsize,myID,&mysocket,message);
+        if (myInputData.newMsgReceived == true)
+        {
+            printf("%s",frameToSend);
+            sendgroup(&mygroup,groupsize,myID,&mysocket,frameToSend);
+            myInputData.newMsgReceived = false;
+        }
 
 //----------------------------------------------------------------------------------
 // Receive Message from group
@@ -148,15 +155,16 @@ int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, 
 
         if (i == myID)
         {
-            //TODO: "send" to UI
-            
+            Frame frame_recv;
+            storeFrame(&frame_recv, payload);
+            logMessage(frame_recv, logfilePathTesting);
         }
         else
         {
             
             for (int y = 0; y < 3; y++)
             {
-                if (sendto(*mysocket, (char *)payload, strlen((char *)payload),MSG_CONFIRM,(const struct sockaddr *)&(*mygroup)[i].addr, sizeof((*mygroup)[i].addr)) == (ssize_t)-1) //TODO: Send to all!
+                if (sendto(*mysocket, (char *)payload, (size_t)BYTES_FRAME_TOTAL,MSG_CONFIRM,(const struct sockaddr *)&(*mygroup)[i].addr, sizeof((*mygroup)[i].addr)) == (ssize_t)-1) //TODO: Send to all!
                 {
                     printf("ERROR: Could not send!");
                     break;
@@ -214,10 +222,23 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
 int recvgroup(int *mysocket, char *message_recv){
 
     ssize_t bytes_recv;
+    Frame frame_recv;
     message_recv[0] = '\0';
 
-    bytes_recv = recv(*mysocket,message_recv,(size_t)BYTES_FRAME_TOTAL-1,0);
+    bytes_recv = recv(*mysocket,message_recv,(size_t)BYTES_FRAME_TOTAL,0);
 
+    if (bytes_recv >= 0)
+    {
+        storeFrame(&frame_recv, message_recv);
+        printf("MsgID: %d\n", frame_recv.msgId);
+    printf("ACK: %d\n", frame_recv.ack);
+    printf("PeerNr: %d\n", frame_recv.peerNr);
+    printf("PayloadLength: %d\n", frame_recv.payloadLength);
+    printf("Payload: %s\n", frame_recv.payload);
+    printf("Checksum: %d\n", frame_recv.checksum);
+        logMessage(frame_recv, logfilePathTesting);
+    }
+    
     return (0);
 }
 
@@ -268,7 +289,6 @@ uint8_t storeFrame(Frame* storageFrame, char rawFrame [BYTES_FRAME_TOTAL])
 
     return errCode;
 }
-
 
 uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t ack, uint8_t peerNr, inputData userInputData)
 {
@@ -329,7 +349,7 @@ uint8_t createLog(char* filepath)
 uint8_t logMessage(Frame msgFrame, char* filepath)
 {
     uint8_t errCode;
-    printf("Writing to log...\n");
+    //printf("Writing to log...\n");
     FILE* myFile = fopen(filepath, "a");
     if(myFile == NULL)
     {

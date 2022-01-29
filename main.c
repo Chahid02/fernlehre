@@ -77,19 +77,19 @@ void testMiddleWare()
     myID = (uint8_t) inputID;
     switch(myID)
     {
-        case 1:
+        case 0:
             myInputData.userMsg = "This is peer 1.";
             myInputData.msgLength = strlen(myInputData.userMsg);
             myInputData.newMsgReceived = true;
             break;
 
-        case 2:
+        case 1:
             myInputData.userMsg = "This is peer 2.";
             myInputData.msgLength = strlen(myInputData.userMsg);
             myInputData.newMsgReceived = true;
             break;
 
-        case 3:
+        case 2:
             myInputData.userMsg = "This is peer 3.";
             myInputData.msgLength = strlen(myInputData.userMsg);
             myInputData.newMsgReceived = true;
@@ -98,8 +98,8 @@ void testMiddleWare()
         default:
             printf("Invalid ID\n");
     }
-    createRawFrame(frameToSend, message_cnt, 0x00, myID, myInputData);
-    myInputData.newMsgReceived = false;
+    createRawFrame(frameToSend, message_cnt+1, 0x01, myID, myInputData);
+    //myInputData.newMsgReceived = false;
 
     storeFrame(&myStorageFrame, frameToSend);
 
@@ -137,10 +137,7 @@ int main(int argc, char **argv)
     // testChecksum();
     // testStoreFrame();
 
-    while (1)
-    {
-        break; // Just to test
-    }
+    middleware();
 
     //pthread_exit(NULL);
 }

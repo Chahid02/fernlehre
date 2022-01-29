@@ -28,6 +28,8 @@
 #include "gui.h"
 #include "middleware.h"
 
+extern char* logfilePathTesting; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
+
 /*---------------------------------------------------------*/
 /*---- MULTITHREAD DEFINES  -------------------------------*/
 /*---------------------------------------------------------*/
