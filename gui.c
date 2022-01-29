@@ -103,9 +103,8 @@ void UI_READ_CONFIG(void)
     fflush(stdout);
     /*--------------------------------*/
     /*---- CONFIG FILE Descriptor ----*/
-    int file_descriptor;
-
     /*--------------------------------------------------------------------------------------------*/
+    int file_descriptor;
     char *configContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
 
     /*--------------------------------------------------------------------------------------------*/
