@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <sys/uio.h>
+#include <fcntl.h>
 
 #include "main.h"
 
