@@ -54,8 +54,8 @@
 
 //groupmember mygroup[groupsize];
 
-//extern char logFilename[100];
-//extern char configFilename[100];
+extern char logFilename[100];
+extern char configFilename[100];
 //extern int LogCreateFlag;
 
 

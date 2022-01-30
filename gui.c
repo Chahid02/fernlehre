@@ -37,6 +37,8 @@
 #include "middleware.h"
 #include "main.h"
 
+extern int PAYLOAD;
+
 int switchNumber;
 char s[100];
 char *end;
@@ -44,8 +46,8 @@ bool correct = false;
 long result;
 // extern int inputID_GLOBAL = 0;
 // extern int inputID_FLAG = 0;
-extern char logFilename[100] = {0};
-extern char configFilename[100] = {0};
+ char logFilename[100] = {0};
+ char configFilename[100] = {0};
 int readSize;
 int LogCreateFlag = 0;
 
@@ -129,7 +131,6 @@ bool read_file(const char *filename)
             char nr[20], ip[20], port[20], logF[20];
 
             sscanf(arr[i], "%s%s%s%s", nr, ip, port, logF);
-            // printf("[X] Reading:%s--------%s--------%s--%s\n", nr, ip, port, logF);
             char *ptr;
             long value = strtol(nr + 1, &ptr, 10);
 
@@ -155,24 +156,16 @@ bool read_file(const char *filename)
 void UI_MW_MEMBER(void)
 {
 
-    if (!read_file("config.txt"))
+    if (!read_file(configFilename))
     {
         printf("Error reading file\n");
         exit(EXIT_FAILURE);
     }
-    /*
-        for (int i = 0; i < groupsize; ++i)
-        {
-            groupmember *cptr = mygroup + i;
-            cptr->id = 2;
-            snprintf(cptr->ipv4, sizeof(cptr->ipv4), "%s", "test");
-            cptr->port = 2;
-        }
-    */
+
     for (int i = 0; i < PEER_MAX_DEC; i++)
     {
-        printf("ID: %i ,", mygroup[i].id);
-        printf("IPv4: %s ,", mygroup[i].ipv4);
+        printf("ID: %i ", mygroup[i].id);
+        printf("IPv4: %s ", mygroup[i].ipv4);
         printf("Port: %i\n", mygroup[i].port);
     }
 }
@@ -197,17 +190,17 @@ void GUI_SELECTION(void)
     printf("---------------------------------------------\n");
     printf("----- UI SELECTION --------------------------\n");
     printf("---------------------------------------------\n");
-    printf("[X] NUMBER:0 -----> CONFIGURE YOUR PEER ID \n");
-    printf("[X] NUMBER:1 -----> CONFIGURE CONFIG PEER FILE \n");
-    printf("[X] NUMBER:2 -----> READ CONFIG PEER FILE \n");
-    printf("[X] NUMBER:3 -----> GET PEER INFORMATION \n");
-    printf("[X] NUMBER:4 -----> CREATE LOG FILE \n");
-    printf("[X] NUMBER:5 -----> READ LOG FILE \n");
-    printf("[X] NUMBER:6 -----> DEFINE PAYLOAD SIZE \n");
-    printf("[X] NUMBER:7 -----> ERROR INJECTION BIT \n");
-    printf("[X] NUMBER:8 -----> SEND MESSAGE \n");
-    printf("[X] NUMBER:9 -----> SENT MESSAGES \n");
-    printf("[X] NUMBER:10 ----> RECEIVED MESSAGES \n");
+    printf("[X] NUMBER:1 -----> CONFIGURE YOUR PEER ID \n");
+    printf("[X] NUMBER:2 -----> CONFIGURE CONFIG PEER FILE \n");
+    printf("[X] NUMBER:3 -----> READ CONFIG PEER FILE \n");
+    printf("[X] NUMBER:4 -----> GET PEER INFORMATION \n");
+    printf("[X] NUMBER:5 -----> CREATE LOG FILE \n");
+    printf("[X] NUMBER:6 -----> READ LOG FILE \n");
+    printf("[X] NUMBER:7 -----> DEFINE PAYLOAD SIZE \n");
+    printf("[X] NUMBER:8 -----> ERROR INJECTION BIT \n");
+    printf("[X] NUMBER:9 -----> SEND MESSAGE \n");
+    printf("[X] NUMBER:10 -----> SENT MESSAGES \n");
+    printf("[X] NUMBER:11 ----> RECEIVED MESSAGES \n");
     printf("---------------------------------------------\n");
     printf("[X] NOTE: INPUT BUFFER IS BROKEN AS FUCK !!!!\r\n");
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
@@ -409,42 +402,43 @@ void UI_LOG_READ(void)
 
 void UI_MAIN(void)
 {
-    UI_MW_MEMBER();
-    // while (1)
-    //{
+    
+     while (1)
+    {
 
     clrscr();
 
     switchNumber = (int)result;
     switch (switchNumber)
     {
-    case 0:
+     case 1:
         UI_GROUPID();
 
-        //  testMiddleWare();
-        // middleware();
+         testMiddleWare();
+         middleware();
 
-        break;
-    case 1:
-        UI_CONF_CONFIG();
-        break;
+        break; 
     case 2:
-        UI_READ_CONFIG();
+        UI_CONF_CONFIG();
+        UI_MW_MEMBER();
         break;
     case 3:
-        UI_PEER_INFO();
+        UI_READ_CONFIG();
         break;
     case 4:
+        UI_PEER_INFO();
+        break;
+    case 5:
         UI_LOG();
 
         break;
 
-    case 5:
+    case 6:
         UI_LOG_READ();
         break;
 
-    case 6:
-        // createLog(logFilename);
+    case 7:
+         createLog(logFilename);
         break;
 
     default:
@@ -468,5 +462,6 @@ void UI_MAIN(void)
             printf("[X] Enter your CMD (1 < n < 10): #");
         }
     } while (!correct);
-    // }
+    
+     }
 }
