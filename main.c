@@ -11,6 +11,7 @@
 
 #include "main.h"
 
+
 int do_mutex = 0;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -78,9 +79,8 @@ void testMiddleWare()
     Frame myStorageFrame;
     int inputID;
 
-     //printf("Enter group ID:\n");
-     printf("[X] Enter your GROUP ID:");
-     scanf("%d", &inputID);
+    printf("[X] Enter your GROUP ID:");
+    scanf("%d", &inputID);
 
     myID = (uint8_t)inputID;
     switch (myID)
@@ -122,33 +122,40 @@ void testMiddleWare()
 int main(int argc, char **argv)
 {
     clrscr();
-    pthread_t threads[NUM_THREADS];
-    int threadCreate;
-    threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
+    pthread_t th1, th2;
+    int threadCr1, threadCr2;
 
-    if (threadCreate != 0)
+    threadCr1 = pthread_create(&th1, NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
+    threadCr2 = pthread_create(&th2, NULL, MW_INTERFACE, (void *)NUM_MW_TREAD);
+    if (threadCr1 != 0 && threadCr2 != 0)
     {
-        printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
+        printf("[X] Error:unable to create thread, %dr\\n", threadCr1);
+        printf("[X] Error:unable to create thread, %dr\\n", threadCr2);
         exit(-1);
     }
     else
     {
-        printf("---------------------------------------------\n");
-        printf("----- MULTI THREADING  ----------------------\n");
-        printf("---------------------------------------------\n");
-        printf("[X] Created Thread ID, %d\r\n", threadCreate);
+
+        // printf("---------------------------------------------\n");
+        // printf("----- MULTI THREADING  ----------------------\n");
+        // printf("---------------------------------------------\n");
+        // printf("[X] Created UI Thread ID, %d\r\n", NUM_UI_TREAD);
+        // printf("[X] Created MW Thread ID, %d\r\n", NUM_MW_TREAD);
     }
 
-    createLog(logfilePathTesting);
-            testMiddleWare();
-            middleware();
-        
+    // createLog(logfilePathTesting);
+    // testMiddleWare();
+    // middleware();
+    while (1)
+    {
+        //(void) pthread_join(th1, NULL);
+        // (void) pthread_join(th2, NULL);
+    }
 
-        //testMiddleWare();
-        // testChecksum();
-        // testStoreFrame();
-        //middleware();
- 
+    // testMiddleWare();
+    //  testChecksum();
+    //  testStoreFrame();
+    // middleware();
 
     pthread_exit(NULL);
 }
@@ -177,24 +184,28 @@ void *UI_INTERFACE(void *threadID)
     long thread_ID;
     thread_ID = (long)threadID;
 
-    printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
+    // printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
+ 
 
-    if (do_mutex)
-    {
-       pthread_mutex_lock(&mutex);
-       printf("MUTEX ON");
+        pthread_mutex_lock(&mutex);
         UI_MAIN();
-    }
-    else
-    {
         pthread_mutex_unlock(&mutex);
-        printf("MUTEX ON");
-        UI_MAIN();
-        
-
-    }
     
-    // UI_LOG();
+
+    pthread_exit(NULL);
+}
+void *MW_INTERFACE(void *threadID)
+{
+    long thread_ID;
+    thread_ID = (long)threadID;
+
+    // printf("[X] MW INTERFACE ID, %ld started\r\n", thread_ID);
+
+        pthread_mutex_lock(&mutex);
+        testMiddleWare();
+        middleware();
+        pthread_mutex_unlock(&mutex);
+    
 
     pthread_exit(NULL);
 }

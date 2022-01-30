@@ -36,7 +36,7 @@ extern char* logfilePathTesting; //das benutzen für Middlewaretests, später de
 /*---------------------------------------------------------*/
 #define NUM_THREADS 2
 #define NUM_UI_TREAD 0
-
+#define NUM_MW_TREAD 1
 /*---------------------------------------------------------*/
 /*---- STRUCT DEFINES--------------------------------------*/
 /*---------------------------------------------------------*/
@@ -48,6 +48,7 @@ extern char* logfilePathTesting; //das benutzen für Middlewaretests, später de
 /*---------------------------------------------------------*/
 
 void *UI_INTERFACE(void *threadID);
+void *MW_INTERFACE(void *threadID);
 extern void testMiddleWare();
 extern int middleware();
 

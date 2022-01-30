@@ -96,12 +96,12 @@ int getID(void){
 
 void getMembers(groupmember (*mygroup)[], int groupsize){
 
-    for (int i = 0; i < groupsize; i++)     //TODO: get memberinfos from ui
+     for (int i = 0; i < groupsize; i++)     //TODO: get memberinfos from ui --> DONE!!!
     {
-        (*mygroup)[i].id = i;
-        printf("%i",(*mygroup)[i].id);
-        strcpy((*mygroup)[i].ipv4,"127.0.0.1");
-        (*mygroup)[i].port = 8080+i;
+        // (*mygroup)[i].id = i;
+        // printf("%i",(*mygroup)[i].id);
+        // strcpy((*mygroup)[i].ipv4,"127.0.0.1");
+        // (*mygroup)[i].port = 8080+i;
         (*mygroup)[i].addr.sin_family = AF_INET;
 
         if(inet_aton((*mygroup)[i].ipv4, &(*mygroup)[i].addr.sin_addr)==0)
@@ -110,7 +110,7 @@ void getMembers(groupmember (*mygroup)[], int groupsize){
         }
 
         (*mygroup)[i].addr.sin_port = htons((*mygroup)[i].port);
-    }
+    } 
 
     //return (mygroup);
 }

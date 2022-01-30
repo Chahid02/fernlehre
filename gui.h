@@ -12,6 +12,18 @@
 #ifndef GUI_H_
 #define GUI_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <sys/uio.h>
+#include <fcntl.h>
 /*---------------------------------------------------------*/
 /*---- MULTITHREAD DEFINES  -------------------------------*/
 /*---------------------------------------------------------*/
@@ -39,6 +51,8 @@
 #define logPath "../log.txt"
 
 
+
+//groupmember mygroup[groupsize];
 
 //extern char logFilename[100];
 //extern char configFilename[100];
