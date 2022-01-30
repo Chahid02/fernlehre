@@ -4,62 +4,41 @@
 //Global Variables:
 char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
 uint8_t groupsize = 3;          //Amount of group members (needs to be set by UI)
-uint8_t myID = 99;               //ID of Peer (needs to be set by UI)
+uint8_t myID = 255;               //ID of Peer (needs to be set by UI)
 uint32_t message_cnt = 0;       //message counter represents the latest message id
 uint8_t mesID_cnt[MAX_PEERS];
 groupmember mygroup[MAX_PEERS];
+pthread_mutex_t mymutex = PTHREAD_MUTEX_INITIALIZER;
 
 extern inputData myInputData;
 
 int middleware( void )
 {
 
-    //TODO: Wait for ID input
+//----------------------------------------------------------------------------------
+// 1. Wait for the UI to get the ID of this Peer
+
+    getID();
 
 //----------------------------------------------------------------------------------
-// Get Informations from UI (about Group) -> IP, Port, ID-Number
+// 2. Get Informations from UI (about Group) -> IP, Port, ID-Number
 
     getMembers(&mygroup, groupsize);
-
-
-    for (int i = 0; i < groupsize; i++)
-    {
-        printf("ID: %i ,",mygroup[i].id);
-        printf("IPv4: %s ,",mygroup[i].ipv4);
-        printf("Port: %i\n",mygroup[i].port);
-    }
     
-
 //----------------------------------------------------------------------------------
-// Start Middleware
+// 3. Start Middleware 
 
     int mysocket;
     setupMW(&mygroup,myID,&mysocket);
 
 //----------------------------------------------------------------------------------
-// Get Message (for testing purposes directly in MW)
-
-    char buff[BYTES_PAYLOAD];                    //message buffer
-    char *fptr;
-    ssize_t bytes_recv;
-
-
-    char *message[BYTES_FRAME_TOTAL];
-    message[0]='\0';
-
-    char *received[BYTES_FRAME_TOTAL];
-    received[0]='\0';
-
-
-// DO FOREVER:
+// 4. Check for received message from other peers & check if there is something to send 
 
     while (true)
     {
 
-        //TODO: Get User Input from buffer
-
 //----------------------------------------------------------------------------------
-// Send Message to group
+// Check for user input & send message to group
         if (myInputData.newMsgReceived == true)
         {
             printf("%s",frameToSend);
@@ -70,7 +49,7 @@ int middleware( void )
 //----------------------------------------------------------------------------------
 // Receive Message from group
 
-        recvgroup(&mysocket,received);
+        recvgroup(&mysocket);
 
         //TODO: Parse Message (or get it already parsed from function)
         //TODO: Message already received? If yes: ignore, if no: hand massage text over to "sendgroup"
@@ -85,11 +64,17 @@ int middleware( void )
 
 }
 
+void getID(void){
 
-
-int getID(void){
-
-    //TODO: Get my own infos from ui
+    while (true)
+    {
+        pthread_mutex_lock(&mymutex);
+        if (myID!=255)
+        {
+            break;
+        }
+        pthread_mutex_unlock(&mymutex);
+    }
 
     return 1;
 }
@@ -110,14 +95,35 @@ void getMembers(groupmember (*mygroup)[], int groupsize){
         }
 
         (*mygroup)[i].addr.sin_port = htons((*mygroup)[i].port);
-    } 
+    }
 
-    //return (mygroup);
+    #ifdef DEBUG
+
+    printf("\n-------------------------------------------------------------\n");
+    printf("This is the Group:\n");
+
+    for (int i = 0; i < groupsize; i++)
+    {
+        printf("ID: %i ,",(*mygroup)[i].id);
+        printf("IPv4: %s ,",(*mygroup)[i].ipv4);
+        printf("Port: %i\n",(*mygroup)[i].port);
+        if (i==myID)
+        {
+            printf("<-- This is the selected Peer.");
+        }
+    }
+
+    printf("-------------------------------------------------------------\n");
+
+    #endif
 }
 
 int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
 
     mesID_cnt[myID] = 1;
+
+    createLog(logfilePathTesting);
+
     // Create socket
     *mysocket = socket((*mygroup)[myID].addr.sin_family, (enum __socket_type) SOCK_DGRAM, 0);
 
@@ -146,16 +152,19 @@ int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
 
 int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, char *payload){
     
-    printf("Message to send: %s \n", payload);
-
+    Frame frame_recv;
 
     for (int i = 0; i < groupsize; i++)
     {
 
         if (i == myID)
         {
-            Frame frame_recv;
+            
             storeFrame(&frame_recv, payload);
+            frame_recv.peerNr = frame_recv.sndId;
+            #ifdef DEBUG
+            printf("Received Message [%i %i] from Peer %i: %s\n",frame_recv.msgId,frame_recv.sndId,frame_recv.peerNr,frame_recv.payload);
+            #endif
             logMessage(frame_recv, logfilePathTesting);
         }
         else
@@ -181,10 +190,13 @@ int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, 
 
         }
 
-        usleep(1000); // Requirement: Wait for 1s between transmissions
+        sleep(1); // Requirement: Wait for 1s between transmissions
     }
 
-    mesID_cnt[myID]=(mesID_cnt[myID]+1)%256;
+    if (frame_recv.sndId==myID)
+    {
+        mesID_cnt[myID]=(mesID_cnt[myID]+1)%256;
+    }
     
     return (0);
     
@@ -192,22 +204,10 @@ int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, 
 
 int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
 
-    // fd_set lese_sock;
-    // FD_ZERO(&lese_sock);
-    // FD_SET(*mysocket, &lese_sock);
-
-    // struct timeval mytimeout = {0,100}; //Wait for acknoledgement 0s 100ms
 
     Frame frame_recv;
     char *received[BYTES_FRAME_TOTAL];
     received[0]='\0';
-    
-    //TODO: waiting for message only a limited time doesnt work (select function)
-
-    // if(select(*mysocket+1,&lese_sock,NULL,NULL,&mytimeout) == -1)
-    // {
-    //     printf("ERROR: Wait for acknoledgement failed!");
-    // }
 
     usleep(100000); //wait 100ms for acknoledgement
 
@@ -218,7 +218,8 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
 
     storeFrame(&frame_recv, received);
 
-            printf("Received to Acknoledge:\n");
+    #ifdef DEBUG
+        printf("Received to Acknoledge:\n");
         printf("MsgID: %d\n", frame_recv.msgId);
         printf("SndID: %d\n", frame_recv.sndId);
         printf("ACK: %d\n", frame_recv.ack);
@@ -229,6 +230,7 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
         printf("%i == 1\n",frame_recv.ack);
         printf("%i == %i\n",frame_recv.msgId,mesID_cnt[myID]);
         printf("%i == %i\n",frame_recv.peerNr,peerid);
+    #endif
 
     if ((frame_recv.ack == 1)&&(frame_recv.msgId == mesID_cnt[myID])&&(frame_recv.peerNr==peerid))
     {
@@ -241,14 +243,15 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
     return(-1);
 }
 
-int recvgroup(int *mysocket, char *message_recv){
+int recvgroup(int *mysocket){
 
+    char *message_recv[BYTES_PAYLOAD_LENGTH];
     ssize_t bytes_recv;
     Frame frame_recv;
     uint16_t recvChecksumCalculated;
     bool checksumValid = false;
     
-    int8_t idtoack;
+    int8_t prev_sender;
     message_recv[0] = '\0';
 
     bytes_recv = recv(*mysocket,message_recv,(size_t)BYTES_FRAME_TOTAL,0);
@@ -285,35 +288,34 @@ int recvgroup(int *mysocket, char *message_recv){
 
         if ((frame_recv.ack == 0) && checksumValid)
         {
-            idtoack = frame_recv.peerNr;
+            prev_sender = frame_recv.peerNr;
             frame_recv.ack = 1;
             frame_recv.peerNr = myID;
 
-            
-            frame_recv.payload[BYTES_PAYLOAD]='\0';
-            buff.userMsg[0]='\0';
-            
-            //memcpy(buff.userMsg, frame_recv.payload, frame_recv.payloadLength);
             buff.msgLength = frame_recv.payloadLength;
 
             createRawFrame(message_recv,frame_recv.msgId,frame_recv.sndId,frame_recv.ack,frame_recv.peerNr,buff);
 
-            // printf("MsgID: %d\n", frame_recv.msgId);
-            // printf("SndID: %d\n", frame_recv.sndId);
-            // printf("ACK: %d\n", frame_recv.ack);
-            // printf("PeerNr: %d\n", frame_recv.peerNr);
-            // printf("PayloadLength: %d\n", frame_recv.payloadLength);
-            // printf("Payload: %s\n", frame_recv.payload);
+            #ifdef DEBUG
+            printf("MsgID: %d\n", frame_recv.msgId);
+            printf("SndID: %d\n", frame_recv.sndId);
+            printf("ACK: %d\n", frame_recv.ack);
+            printf("PeerNr: %d\n", frame_recv.peerNr);
+            printf("PayloadLength: %d\n", frame_recv.payloadLength);
+            printf("Payload: %s\n", frame_recv.payload);
+            #endif
             
-            if (sendto(*mysocket, message_recv, (size_t)BYTES_FRAME_TOTAL,MSG_CONFIRM,(const struct sockaddr *)&mygroup[idtoack].addr, sizeof(mygroup[idtoack].addr)) == (ssize_t)-1)
+            if (sendto(*mysocket, message_recv, (size_t)BYTES_FRAME_TOTAL,MSG_CONFIRM,(const struct sockaddr *)&mygroup[prev_sender].addr, sizeof(mygroup[prev_sender].addr)) == (ssize_t)-1)
             {
                 printf("ERROR: Could not send!");
             }
-            printf("Acknoledged!\n");
 
             if (mesID_cnt[frame_recv.sndId] < frame_recv.msgId)
             {
+                #ifdef DEBUG
                 printf("RESEND to group!\n");
+                #endif
+
                 mesID_cnt[frame_recv.sndId] = frame_recv.msgId;
                 frame_recv.ack = 0;
                 createRawFrame(message_recv,frame_recv.msgId,frame_recv.sndId,frame_recv.ack,frame_recv.peerNr,buff);

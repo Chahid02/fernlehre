@@ -63,11 +63,12 @@ extern uint8_t groupsize;        //Amount of group members (needs to be set by U
 extern uint8_t myID;              //ID of Peer (needs to be set by UI)
 extern uint32_t message_cnt;       //message counter represents the latest message id
 extern groupmember mygroup[MAX_PEERS];
+extern pthread_mutex_t mymutex;
 
 int middleware(void);
 int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, char *payload);
-int recvgroup(int *mysocket, char *message_recv);
-int getID(void);
+int recvgroup(int *mysocket);
+void getID(void);
 void getMembers(groupmember (*mygroup)[], int groupsize);
 int setupMW(groupmember (*mygroup)[],int myID, int *mysocket);
 groupmember parsemes(char *message);
