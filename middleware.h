@@ -15,6 +15,10 @@
 #include <fcntl.h>
 
 #include "main.h"
+/*
+#define DEBUG //See everything thats going on
+#define ACK   //See if message gets acknoledged
+*/
 
 #define BYTES_MSG_ID 1
 #define BYTES_SENDER_ID 1
@@ -27,8 +31,6 @@
 #define BYTES_FRAME_TOTAL (BYTES_MSG_ID + BYTES_SENDER_ID + BYTES_ACK + BYTES_PEER_NR + BYTES_PAYLOAD + BYTES_CHECKSUM + BYTES_TERM) //40 Bytes total
 
 #define MAX_PEERS 5
-
-
 
 typedef struct
 {

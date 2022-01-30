@@ -1,3 +1,5 @@
 MessageID PeerNr Payload
-        1      0 hello
+       10      0 haha
+ 
+       20      0 lol bro
  

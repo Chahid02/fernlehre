@@ -193,8 +193,10 @@ int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, 
                 
                 if(ACK(mygroup, mysocket, i) == -1)
                 {
+                    #ifdef ACK
                     printf("INFO: Message was not received by member %i!\n",i);
                     printf("INFO: Resend...\n");
+                    #endif
                 } else
                 {
                     break;
@@ -226,7 +228,9 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
 
     if (recvfrom(*mysocket, received, BYTES_FRAME_TOTAL, 0, (const struct sockaddr *)&(*mygroup)[peerid].addr, sizeof((*mygroup)[peerid].addr)) == (ssize_t)-1)
     {
+        #ifdef DEBUG
         printf("ERROR: Could not receive!");
+        #endif
     }
 
     storeFrame(&frame_recv, received);
@@ -553,7 +557,6 @@ bool readConfig(const char *filename)
 
     return true;
 }
-
 
 int getWords(char *base, char target[20][120])
 {
