@@ -71,8 +71,7 @@ Checksum: 2 byte -> uint16
 Terminating Character: 1 byte -> char
 
 
-<img src=TestImg1.jpeg" alt="ip" style="zoom:80%;" />
-                                                  
-     
-<img src=TestImg2.jpeg" alt="ip" style="zoom:80%;" />                                             
+<img src="TestImg1.jpeg" alt="ip" style="zoom:80%;" />
+                                              
+<img src="TestImg2.jpeg" alt="ip" style="zoom:80%;" />                                             
                                                   
