@@ -417,10 +417,9 @@ void UI_SND_MSG(void){
     uint8_t inputLength = 0;
     char* ptrToBuffer = &userInputBuffer[0];
     fflush(stdin);
+    clearStdinNewlines();
     fgets(userInputBuffer, BYTES_PAYLOAD+1, stdin);
-    printf("First fgets: %s", userInputBuffer);
-    fgets(userInputBuffer, BYTES_PAYLOAD+1, stdin);
-    printf("2nd fgets: %s", userInputBuffer);
+    printf("User Input: %s", userInputBuffer);
     inputLength = strlen(ptrToBuffer);
     printf("InputLegnth: %d\n", inputLength);
     pthread_mutex_lock(&mutexInput);
@@ -437,6 +436,26 @@ void UI_SND_MSG(void){
 }
 
 void UI_ERR_INJ(void){
+    clrscr();
+    char input[4];
+    uint16_t inputInt;
+    printf("Which bit should be flipped (0-255)?\n");
+    
+    clearStdinNewlines();
+    fgets(input, 3, stdin);
+    inputInt = atoi(input);
+    if(inputInt > 255)
+    {
+        printf("Invalid bit index!\n");
+    }
+    else
+    {
+        pthread_mutex_lock(&mutexBitError);
+        userErrorBit = inputInt;
+        errorInjectionCalled = true;
+        pthread_mutex_unlock(&mutexBitError);
+    }
+
 
 }
 
@@ -481,6 +500,7 @@ void UI_MAIN(void)
 
     do
     {
+        //clearStdinNewlines();
         fgets(s, 2, stdin);
 
         if (IS_INT_STRING(s))
@@ -496,4 +516,10 @@ void UI_MAIN(void)
     } while (!correct);
     
      }
+}
+
+void clearStdinNewlines(void)
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 }

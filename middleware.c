@@ -10,7 +10,10 @@ uint8_t mesID_cnt[MAX_PEERS];
 groupmember mygroup[MAX_PEERS];
 pthread_mutex_t mymutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutexInput = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexBitError = PTHREAD_MUTEX_INITIALIZER;
 inputData myInputData = {.newMsgReceived = false};
+bool errorInjectionCalled = false;
+uint16_t userErrorBit = 0;
 
 int middleware( void )
 {
@@ -43,9 +46,14 @@ int middleware( void )
         if (myInputData.newMsgReceived == true)
         {
             createRawFrame(frameToSend, mesID_cnt[myID], myID, 0x00, myID, myInputData);
-            printf("Checksum send byte 1: %x\n", frameToSend[37]);
-            printf("Checksum send byte 2: %x\n", frameToSend[38]);
-            printf("Terminating byte: %x\n", frameToSend[39]);
+            if(errorInjectionCalled)
+            {
+                pthread_mutex_lock(&mutexBitError);
+                uint16_t localErrorBit = userErrorBit;
+                errorInjectionCalled = false;
+                pthread_mutex_unlock(&mutexBitError);
+                injectError(frameToSend, localErrorBit);
+            }
             sendgroup(&mygroup,groupsize,myID,&mysocket,frameToSend);
             myInputData.newMsgReceived = false;
         }

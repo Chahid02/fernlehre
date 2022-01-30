@@ -78,4 +78,5 @@ void UI_GROUPID(void);
 void UI_SND_MSG(void);
 void UI_ERR_INJ(void);
 extern void UI_MW_MEMBER(void);
+void clearStdinNewlines(void);
 #endif

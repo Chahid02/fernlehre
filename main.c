@@ -142,6 +142,9 @@ int main(int argc, char **argv)
     if(pthread_mutex_init(&mutexInput,NULL)!=0){
         printf("ERROR: Mutex was not created!\n");
     }
+    if(pthread_mutex_init(&mutexBitError,NULL)!=0){
+        printf("ERROR: Mutex was not created!\n");
+    }
 
     threadCr1 = pthread_create(&th1, NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
     if (threadCr1 != 0)

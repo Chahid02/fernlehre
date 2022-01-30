@@ -65,7 +65,10 @@ extern uint32_t message_cnt;       //message counter represents the latest messa
 extern groupmember mygroup[MAX_PEERS];
 extern pthread_mutex_t mymutex;
 extern pthread_mutex_t mutexInput;
+extern pthread_mutex_t mutexBitError;
 extern inputData myInputData;
+extern bool errorInjectionCalled;
+extern uint16_t userErrorBit;
 
 int middleware(void);
 int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, char *payload);
