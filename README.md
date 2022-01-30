@@ -27,7 +27,7 @@
 5. Now you see the menu, and you can select the following:
 
     1. Send message: You can input a message (max 32 bytes) and the program sends it to all members (To fulfill the INTEGRITY requirement, the message gets signed with a unique Message ID witch is a combination of sequence number and sender id)
-    2. Show received messages: You can see all received messages (including the own sent messages, to fulfill the VALIDITY requirement)
+    2. Show received messages: You can see all received messages (including the own sent messages, because they get delivered through the middleware and not by the UI, to fulfill the VALIDITY requirement)
     3. Set error injection bit: You can set the error injection bit, which flips the bit (on the location you wrote) in the next message which you want to send.
     4. Show infos about group: You can show the config table.
 
