@@ -29,6 +29,8 @@
 #include "middleware.h"
 #include "main.h"
 
+extern int inputID_GLOBAL = 0;
+extern int inputID_FLAG = 0;
 extern char logFilename[100] = {0};
 extern char configFilename[100] = {0};
 int readSize;
@@ -54,6 +56,7 @@ void GUI_SELECTION(void)
     printf("---------------------------------------------\n");
     printf("----- UI SELECTION --------------------------\n");
     printf("---------------------------------------------\n");
+    printf("[X] NUMBER:0 -----> CONFIGURE YOUR PEER ID \n");
     printf("[X] NUMBER:1 -----> CONFIGURE CONFIG PEER FILE \n");
     printf("[X] NUMBER:2 -----> READ CONFIG PEER FILE \n");
     printf("[X] NUMBER:3 -----> GET PEER INFORMATION \n");
@@ -162,9 +165,8 @@ void UI_PEER_INFO(void)
         readSize = read(file_descriptor, configContent, 500);
         if (inputDec <= PEER_MAX_DEC && readSize > 0)
         {
-            snprintf(searchNr, sizeof(inputNr), "%s", inputNr);
-            // snprintf(searchNr, sizeof("#"), "%s", "#");
 
+            strcat(searchNr, inputNr);
             sscanf(configContent, "%s%s%s%s", nr, ip, port, log);
             printf("[X] Reading:%s--------%s--------%s--%s\n", nr, ip, port, log);
             fflush(stdout);
@@ -225,6 +227,14 @@ void timeStampFunc(void)
     printf("Current date and time: %s\n", cur_time);
 }
 
+void UI_GROUPID(void)
+{
+    printf("---------------------------------------------\n");
+    printf("----- GROUP ID SELECTION --------------------\n");
+    printf("---------------------------------------------\n");
+    inputID_FLAG = 1;
+}
+
 void UI_LOG_READ(void)
 {
     printf("---------------------------------------------\n");
@@ -267,12 +277,18 @@ void UI_MAIN(void)
     while (1)
     {
 
-        // clrscr();
+        clrscr();
 
         int switchNumber = (int)result;
         switch (switchNumber)
         {
+        case 0:
+            UI_GROUPID();
 
+            testMiddleWare();
+            middleware();
+
+            break;
         case 1:
             UI_CONF_CONFIG();
             break;
@@ -292,7 +308,7 @@ void UI_MAIN(void)
             break;
 
         case 6:
-            createLog(logFilename);
+            // createLog(logFilename);
             break;
 
         default:

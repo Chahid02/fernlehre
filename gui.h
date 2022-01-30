@@ -40,9 +40,10 @@
 
 
 
-extern char logFilename[100];
-extern char configFilename[100];
-extern int LogCreateFlag;
+//extern char logFilename[100];
+//extern char configFilename[100];
+//extern int LogCreateFlag;
+
 
 /*---------------------------------------------------------*/
 /*---- PROTOTYPE DECLARATION  -----------------------------*/
@@ -59,4 +60,5 @@ void *UI_INTERFACE(void *threadID);
 void clear_buffer();
 void timeStampFunc(void);
 void UI_LOG_READ(void);
+void UI_GROUPID(void);
 #endif

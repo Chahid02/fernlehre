@@ -30,6 +30,7 @@
 
 extern char* logfilePathTesting; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
 
+
 /*---------------------------------------------------------*/
 /*---- MULTITHREAD DEFINES  -------------------------------*/
 /*---------------------------------------------------------*/
@@ -47,6 +48,7 @@ extern char* logfilePathTesting; //das benutzen für Middlewaretests, später de
 /*---------------------------------------------------------*/
 
 void *UI_INTERFACE(void *threadID);
-
+extern void testMiddleWare();
+extern int middleware();
 
 #endif

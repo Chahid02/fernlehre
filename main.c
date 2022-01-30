@@ -11,17 +11,20 @@
 
 #include "main.h"
 
-static int do_mutex;
+int do_mutex = 0;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-char* logfilePathTesting = "../log.txt"; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
+char *logfilePathTesting = "../log.txt"; // das benutzen für Middlewaretests, später den Path aus der GUI benutzen
 
 inputData myInputData = {.newMsgReceived = false};
 
-extern char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
-extern uint8_t groupsize;        //Amount of group members (needs to be set by UI)
-extern uint8_t myID;              //ID of Peer (needs to be set by UI)
-extern uint32_t message_cnt;       //message counter represents the latest message id
+extern int inputID_FLAG;
+extern int inputID_GLOBAL;
+
+extern char frameToSend[BYTES_FRAME_TOTAL]; // Connection between MW and UI
+extern uint8_t groupsize;                   // Amount of group members (needs to be set by UI)
+extern uint8_t myID;                        // ID of Peer (needs to be set by UI)
+extern uint32_t message_cnt;                // message counter represents the latest message id
 
 void testChecksum()
 {
@@ -46,11 +49,11 @@ void testStoreFrame()
     uint8_t myAck = 0x00;
     uint8_t myPeerNr = 0x01;
     myInputData.msgLength = 4;
-    myInputData.userMsg= "Test";
-    createRawFrame(myRawFrame , myMsgId, mySndId, myAck, myPeerNr, myInputData);
+    myInputData.userMsg = "Test";
+    createRawFrame(myRawFrame, myMsgId, mySndId, myAck, myPeerNr, myInputData);
     myInputData.newMsgReceived = false;
     printf("RawFrame: %s\n", myRawFrame);
-    for(int i = 0; i < BYTES_FRAME_TOTAL; i++)
+    for (int i = 0; i < BYTES_FRAME_TOTAL; i++)
     {
         printf("Rawframe index %d: %X\n", i, myRawFrame[i]);
     }
@@ -63,44 +66,48 @@ void testStoreFrame()
     printf("Payload: %s\n", myStorageFrame.payload);
     printf("Checksum: %d\n", myStorageFrame.checksum);
 
-    for(int i=0; i<5; i++){
+    for (int i = 0; i < 5; i++)
+    {
         logMessage(myStorageFrame, logfilePathTesting);
     }
 }
 
-//testfunction to test middleware without UI
+// testfunction to test middleware without UI
 void testMiddleWare()
 {
     Frame myStorageFrame;
     int inputID;
-    printf("Enter group ID:\n");
-    scanf("%d", &inputID);
-    myID = (uint8_t) inputID;
-    switch(myID)
+
+     //printf("Enter group ID:\n");
+     printf("[X] Enter your GROUP ID:");
+     scanf("%d", &inputID);
+
+    myID = (uint8_t)inputID;
+    switch (myID)
     {
-        case 0:
-            myInputData.userMsg = "This is peer 1.";
-            myInputData.msgLength = strlen(myInputData.userMsg);
-            myInputData.newMsgReceived = true;
-            break;
+    case 0:
+        myInputData.userMsg = "This is peer 1.";
+        myInputData.msgLength = strlen(myInputData.userMsg);
+        myInputData.newMsgReceived = true;
+        break;
 
-        case 1:
-            myInputData.userMsg = "This is peer 2.";
-            myInputData.msgLength = strlen(myInputData.userMsg);
-            myInputData.newMsgReceived = true;
-            break;
+    case 1:
+        myInputData.userMsg = "This is peer 2.";
+        myInputData.msgLength = strlen(myInputData.userMsg);
+        myInputData.newMsgReceived = true;
+        break;
 
-        case 2:
-            myInputData.userMsg = "This is peer 3.";
-            myInputData.msgLength = strlen(myInputData.userMsg);
-            myInputData.newMsgReceived = true;
-            break;
+    case 2:
+        myInputData.userMsg = "This is peer 3.";
+        myInputData.msgLength = strlen(myInputData.userMsg);
+        myInputData.newMsgReceived = true;
+        break;
 
-        default:
-            printf("Invalid ID\n");
+    default:
+        printf("Invalid ID\n");
     }
     createRawFrame(frameToSend, 1, myID, 0x00, myID, myInputData);
-    //myInputData.newMsgReceived = false;
+    // myInputData.newMsgReceived = false;
 
     storeFrame(&myStorageFrame, frameToSend);
 
@@ -115,32 +122,35 @@ void testMiddleWare()
 int main(int argc, char **argv)
 {
     clrscr();
-    // pthread_t threads[NUM_THREADS];
-    // int threadCreate;
-    // threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
+    pthread_t threads[NUM_THREADS];
+    int threadCreate;
+    threadCreate = pthread_create(&threads[NUM_UI_TREAD], NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
 
-    // if (threadCreate != 0)
-    // {
-    //     printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
-    //     exit(-1);
-    // }
-    // else
-    // {
-    //     printf("---------------------------------------------\n");
-    //     printf("----- MULTI THREADING  ----------------------\n");
-    //     printf("---------------------------------------------\n");
-    //     printf("[X] Created Thread ID, %d\r\n", threadCreate);
-    // }
+    if (threadCreate != 0)
+    {
+        printf("[X] Error:unable to create thread, %dr\\n", threadCreate);
+        exit(-1);
+    }
+    else
+    {
+        printf("---------------------------------------------\n");
+        printf("----- MULTI THREADING  ----------------------\n");
+        printf("---------------------------------------------\n");
+        printf("[X] Created Thread ID, %d\r\n", threadCreate);
+    }
 
     createLog(logfilePathTesting);
+            testMiddleWare();
+            middleware();
+        
 
-    testMiddleWare();
-    // testChecksum();
-    // testStoreFrame();
+        //testMiddleWare();
+        // testChecksum();
+        // testStoreFrame();
+        //middleware();
+ 
 
-    middleware();
-
-    //pthread_exit(NULL);
+    pthread_exit(NULL);
 }
 
 /*!
@@ -169,12 +179,22 @@ void *UI_INTERFACE(void *threadID)
 
     printf("[X] UI INTERFACE ID, %ld started\r\n", thread_ID);
 
-
+    if (do_mutex)
+    {
+       pthread_mutex_lock(&mutex);
+       printf("MUTEX ON");
         UI_MAIN();
-    
+    }
+    else
+    {
+        pthread_mutex_unlock(&mutex);
+        printf("MUTEX ON");
+        UI_MAIN();
+        
 
+    }
+    
     // UI_LOG();
 
     pthread_exit(NULL);
 }
-
