@@ -198,8 +198,7 @@ void GUI_SELECTION(void)
     printf("[X] NUMBER:6 -----> READ LOG FILE \n");
     printf("[X] NUMBER:7 -----> ERROR INJECTION BIT \n");
     printf("[X] NUMBER:8 -----> SEND MESSAGE \n");
-    printf("[X] NUMBER:9 -----> SENT MESSAGES \n");
-    printf("[X] NUMBER:10 ----> RECEIVED MESSAGES \n");
+    printf("[X] NUMBER:9----> RECEIVED MESSAGES \n");
     printf("---------------------------------------------\n");
     printf("[X] NOTE: INPUT BUFFER IS BROKEN AS FUCK !!!!\r\n");
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
