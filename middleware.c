@@ -93,7 +93,7 @@ void getMembers(groupmember (*mygroup)[], int groupsize){
         //printf("%i",(*mygroup)[i].id);
         //strcpy((*mygroup)[i].ipv4,"127.0.0.1");
         //(*mygroup)[i].port = 8080+i;
-        //(*mygroup)[i].addr.sin_family = AF_INET;
+        (*mygroup)[i].addr.sin_family = AF_INET;
 
         if(inet_aton((*mygroup)[i].ipv4, &(*mygroup)[i].addr.sin_addr)==0)
         {
@@ -175,7 +175,6 @@ int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, 
         }
         else
         {
-            
             for (int y = 0; y < 3; y++)
             {
                 if (sendto(*mysocket, (char *)payload, (size_t)BYTES_FRAME_TOTAL,MSG_CONFIRM,(const struct sockaddr *)&(*mygroup)[i].addr, sizeof((*mygroup)[i].addr)) == (ssize_t)-1) //TODO: Send to all!
@@ -539,6 +538,9 @@ bool readConfig(const char *filename)
     lines = 0;
     free(line);
     fclose(file);
+
+
+
 
     return true;
 }
