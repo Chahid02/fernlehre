@@ -198,7 +198,7 @@ void GUI_SELECTION(void)
     printf("[X] NUMBER:4 -----> SHOW INFOS ABOUT GROUP \n");
     printf("---------------------------------------------\n");
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
-    printf("[X] Enter your CMD (1 < n < 10): #");
+    printf("[X] Enter your CMD (1 <= n <= 4): #");
 }
 
 void UI_CONF_CONFIG(void)

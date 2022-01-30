@@ -457,14 +457,18 @@ uint8_t createLog(char* filepath)
 uint8_t logMessage(Frame msgFrame, char* filepath)
 {
     uint8_t errCode = 0;
-    //printf("Writing to log...\n");
+    uint16_t printMsgId = 0;
+    uint8_t positionsForSendId = (groupsize/10) + 1;
     FILE* myFile = fopen(filepath, "a");
     if(myFile == NULL)
     {
         printf("Error opening logfile!\n");
     }
+    printMsgId = 10 * positionsForSendId * msgFrame.msgId;
+    printMsgId += msgFrame.sndId;
+
     //print MsgId Peer Payload
-    fprintf(myFile, "%9d %6d %s \n", msgFrame.msgId, msgFrame.peerNr, msgFrame.payload);
+    fprintf(myFile, "%9d %6d %s \n", printMsgId, msgFrame.peerNr, msgFrame.payload);
     fclose(myFile);
 
     return errCode;
