@@ -232,31 +232,25 @@ void UI_READ_CONFIG(void)
     printf("----- CONFIG FILE ---------------------------\n");
     printf("---------------------------------------------\n");
     fflush(stdout);
-    /*--------------------------------*/
-    /*---- CONFIG FILE Descriptor ----*/
-    /*--------------------------------------------------------------------------------------------*/
-    int file_descriptor;
-    char *configContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
+    printf("This is the Group:\n");
 
-    /*--------------------------------------------------------------------------------------------*/
-    file_descriptor = open(configfilePath, O_RDWR, 0777);
-    if (file_descriptor == -1)
+    for (int i = 0; i < groupsize; i++)
     {
-        printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
-        printf("[X] PLEASE CONFIGURE THE PATH \r\n");
-        fflush(stdout);
+        printf("ID: %i ,",mygroup[i].id);
+        printf("IPv4: %s ,",mygroup[i].ipv4);
+        printf("Port: %i\n",mygroup[i].port);
+        if (i==myID)
+        {
+            printf("<-- This is the selected Peer.");
+        }
     }
-    else
+    printf("\nHit enter to return to menu!\n");
+    char enter = 0;
+    while (enter != '\r' && enter != '\n')
     {
-
-        readSize = read(file_descriptor, configContent, 500);
-        printf("[X] Reading file : %s\n", configfilePath);
-        printf("[X] Number of bytes written in file %s: %d\r\n", configfilePath, readSize);
-        printf("[X] configContent:\n%s", configContent);
-        fflush(stdout);
-        free(configContent);
-        close(file_descriptor);
+        enter = getchar();
     }
+    
 }
 
 void UI_PEER_INFO(void)
@@ -471,11 +465,13 @@ void UI_MAIN(void)
         UI_ERR_INJ();
         break;
     case 4:
-        UI_PEER_INFO();
+        UI_READ_CONFIG();
         break;
     default:
         break;
     }
+
+    clrscr();
 
     GUI_SELECTION();
 

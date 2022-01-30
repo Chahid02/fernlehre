@@ -74,7 +74,8 @@ void getID(void);
 void getMembers(groupmember (*mygroup)[], int groupsize);
 int setupMW(groupmember (*mygroup)[],int myID, int *mysocket);
 groupmember parsemes(char *message);
-int ACK(groupmember (*mygroup)[], int *mysocket, int peerid); 
+int ACK(groupmember (*mygroup)[], int *mysocket, int peerid);
+bool readConfig(const char *filename);
 
 /*
 data: payload for which the checksum be calculated
