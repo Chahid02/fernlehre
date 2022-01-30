@@ -93,12 +93,14 @@ void getID(void){
 
 void getMembers(groupmember (*mygroup)[], int groupsize){
 
-     for (int i = 0; i < groupsize; i++)     //TODO: get memberinfos from ui --> DONE!!!
+    readConfig(configfilePath);
+
+    for (int i = 0; i < groupsize; i++)     //TODO: get memberinfos from ui --> DONE!!!
     {
-        (*mygroup)[i].id = i;
-        printf("%i",(*mygroup)[i].id);
-        strcpy((*mygroup)[i].ipv4,"127.0.0.1");
-        (*mygroup)[i].port = 8080+i;
+        //(*mygroup)[i].id = i;
+        //printf("%i",(*mygroup)[i].id);
+        //strcpy((*mygroup)[i].ipv4,"127.0.0.1");
+        //(*mygroup)[i].port = 8080+i;
         (*mygroup)[i].addr.sin_family = AF_INET;
 
         if(inet_aton((*mygroup)[i].ipv4, &(*mygroup)[i].addr.sin_addr)==0)
@@ -181,7 +183,6 @@ int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, 
         }
         else
         {
-            
             for (int y = 0; y < 3; y++)
             {
                 if (sendto(*mysocket, (char *)payload, (size_t)BYTES_FRAME_TOTAL,MSG_CONFIRM,(const struct sockaddr *)&(*mygroup)[i].addr, sizeof((*mygroup)[i].addr)) == (ssize_t)-1) //TODO: Send to all!
@@ -487,4 +488,67 @@ uint8_t injectError(char* rawFrame, uint16_t bitIndex)
 
 
     return errCode;
+}
+
+bool readConfig(const char *filename)
+{
+    FILE *file = fopen(filename, "r");
+    if (!file)
+        return false;
+
+    char lineText[120];
+    int lines = 0;
+    char str[20][120];
+    int found = 0;
+    char arr[20][120];
+
+    char *line = NULL;
+    size_t linesize = 0;
+
+    while (getline(&line, &linesize, file) != -1)
+    {
+        snprintf(str[lines], sizeof(lineText), "%s", lineText);
+        int j = snprintf(lineText, linesize, "%s", line);
+
+        // printf("%s", str[lines]);
+        str[lines][120] = '\0';
+        lineText[120] = '\0';
+        char *pch = strstr(str[lines], "#1");
+
+        if (pch)
+        {
+            found = 1;
+            // printf("Found in row@%s\n ",pch);
+        }
+
+        int n = getWords(lineText, arr);
+        int i = 0;
+        while (i <= n)
+        {
+            char nr[20], ip[20], port[20], logF[20];
+
+            sscanf(arr[i], "%s%s%s%s", nr, ip, port, logF);
+            char *ptr;
+            long value = strtol(nr + 1, &ptr, 10);
+
+            mygroup[lines - 1].id = value;
+            mygroup[lines - 1].id = value;
+            snprintf(mygroup[lines - 1].ipv4, sizeof(mygroup[lines - 1].ipv4), "%s", ip);
+            *ptr;
+            value = strtol(port, &ptr, 10);
+            mygroup[lines - 1].port = value;
+
+            i++;
+        }
+
+        lines++;
+    }
+    lines = 0;
+    free(line);
+    fclose(file);
+
+
+
+
+    return true;
 }

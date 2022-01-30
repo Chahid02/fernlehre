@@ -232,112 +232,26 @@ void UI_READ_CONFIG(void)
     printf("----- CONFIG FILE ---------------------------\n");
     printf("---------------------------------------------\n");
     fflush(stdout);
-    /*--------------------------------*/
-    /*---- CONFIG FILE Descriptor ----*/
-    /*--------------------------------------------------------------------------------------------*/
-    int file_descriptor;
-    char *configContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
+    printf("This is the Group:\n");
 
-    /*--------------------------------------------------------------------------------------------*/
-    file_descriptor = open(configfilePath, O_RDWR, 0777);
-    if (file_descriptor == -1)
+    for (int i = 0; i < groupsize; i++)
     {
-        printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
-        printf("[X] PLEASE CONFIGURE THE PATH \r\n");
-        fflush(stdout);
-    }
-    else
-    {
-
-        readSize = read(file_descriptor, configContent, 500);
-        printf("[X] Reading file : %s\n", configfilePath);
-        printf("[X] Number of bytes written in file %s: %d\r\n", configfilePath, readSize);
-        printf("[X] configContent:\n%s", configContent);
-        fflush(stdout);
-        free(configContent);
-        close(file_descriptor);
-    }
-}
-
-void UI_PEER_INFO(void)
-{
-    int file_descriptor;
-    /*--------------------------------*/
-    /*---- CONFIG FILE Descriptor ----*/
-    /*--------------------------------------------------------------------------------------------*/
-    char *configContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
-
-    /*--------------------------------------------------------------------------------------------*/
-    printf("---------------------------------------------\n");
-    printf("----- PEER INFORMATION ----------------------\n");
-    printf("---------------------------------------------\n");
-
-    file_descriptor = open(configfilePath, O_RDONLY, 0777);
-    if (file_descriptor == -1)
-    {
-        printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
-        printf("[X] PLEASE CONFIGURE THE PATH \r\n");
-    }
-    else
-    {
-        char nr[20], ip[20], port[20], log[20];
-        char *searchNewLine;
-        char maxLenght[] = PEER_NR;
-        char inputNr[sizeof(PEER_NR)];
-        char searchNr[sizeof(PEER_NR) + 1];
-
-        printf("[X] Enter the PEER #NR:");
-        int ret = scanf("%s", inputNr);
-        snprintf(searchNr, sizeof("#"), "%s", "#");
-        int inputDec = atoi(inputNr);
-        readSize = read(file_descriptor, configContent, 500);
-        if (inputDec <= PEER_MAX_DEC && readSize > 0)
+        printf("ID: %i ,",mygroup[i].id);
+        printf("IPv4: %s ,",mygroup[i].ipv4);
+        printf("Port: %i",mygroup[i].port);
+        if (i==myID)
         {
-
-            strcat(searchNr, inputNr);
-            sscanf(configContent, "%s%s%s%s", nr, ip, port, log);
-            printf("[X] Reading:%s--------%s--------%s--%s\n", nr, ip, port, log);
-            fflush(stdout);
-
-            searchNewLine = strstr(configContent, searchNr);
-            sscanf(searchNewLine, "%s%s%s%s", nr, ip, port, log);
-            printf("[X] PEER %s: %s--%s--%s--%s--@pos%ld\n", searchNr, nr, ip, port, log, searchNewLine - configContent);
-            fflush(stdout);
+            printf("  <-- This is the selected Peer.");
         }
-        else
-        {
-
-            printf("[X] WRONG PEER #NR OR FILE IS EMPTY!!!");
-            fflush(stdout);
-        }
-        configContent[499] = '\0';
-        close(file_descriptor);
+        printf("\n");
     }
-}
-
-void UI_LOG(void)
-{
-    printf("---------------------------------------------\n");
-    printf("----- CREATE LOG FILE -----------------------\n");
-    printf("---------------------------------------------\n");
-    printf("[X] Enter the Path of the LOG File:");
-
-    scanf("%s", logfilePath);
-    // snprintf(filename, sizeof(logfilePath), "%d", logPath);
-    int file_descriptor = open(logfilePath, O_RDWR | O_CREAT, 0777);
-
-    if (file_descriptor == -1)
+    printf("\nHit enter to return to menu!\n");
+    char enter = 0;
+    while (enter != '\r' && enter != '\n')
     {
-        perror("[X] LOG FILE NOT FOUND");
-        // exit(1);
-        LogCreateFlag = 0;
+        enter = getchar();
     }
-    else
-    {
-        printf("[X] LOG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
-        LogCreateFlag = 1;
-        close(file_descriptor);
-    }
+    
 }
 
 void timeStampFunc(void)
@@ -403,6 +317,14 @@ void UI_LOG_READ(void)
         free(logContent);
         close(file_descriptor);
     }
+
+    printf("\nHit enter to return to menu!\n");
+    char enter = 0;
+    while (enter != '\r' && enter != '\n')
+    {
+        enter = getchar();
+    }
+
 }
 
 void UI_SND_MSG(void){
@@ -490,11 +412,13 @@ void UI_MAIN(void)
         UI_ERR_INJ();
         break;
     case 4:
-        UI_PEER_INFO();
+        UI_READ_CONFIG();
         break;
     default:
         break;
     }
+
+    clrscr();
 
     GUI_SELECTION();
 
