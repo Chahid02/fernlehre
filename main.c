@@ -49,8 +49,8 @@ void testStoreFrame()
     uint8_t mySndId = 0x01;
     uint8_t myAck = 0x00;
     uint8_t myPeerNr = 0x01;
-    myInputData.msgLength = 4;
-    myInputData.userMsg = "Test";
+    myInputData.msgLength = 5;
+    myInputData.userMsg = "BBBBA";
     createRawFrame(myRawFrame, myMsgId, mySndId, myAck, myPeerNr, myInputData);
     myInputData.newMsgReceived = false;
     printf("RawFrame: %s\n", myRawFrame);
@@ -67,10 +67,21 @@ void testStoreFrame()
     printf("Payload: %s\n", myStorageFrame.payload);
     printf("Checksum: %d\n", myStorageFrame.checksum);
 
-    for (int i = 0; i < 5; i++)
-    {
-        logMessage(myStorageFrame, logfilePathTesting);
-    }
+    injectError(myRawFrame, 39);
+    uint16_t newChecksum;
+    storeFrame(&myStorageFrame, myRawFrame);
+    calcChecksum(myStorageFrame.payload, &newChecksum);
+    printf("New MsgID: %d\n", myStorageFrame.msgId);
+    printf("New ACK: %d\n", myStorageFrame.ack);
+    printf("New PeerNr: %d\n", myStorageFrame.peerNr);
+    printf("New PayloadLength: %d\n", myStorageFrame.payloadLength);
+    printf("New Payload: %s\n", myStorageFrame.payload);
+    printf("New Checksum: %d\n", newChecksum);
+
+    // for (int i = 0; i < 5; i++)
+    // {
+    //     logMessage(myStorageFrame, logfilePathTesting);
+    // }
 }
 
 // testfunction to test middleware without UI
@@ -122,6 +133,7 @@ void testMiddleWare()
 int main(int argc, char **argv)
 {
     clrscr();
+    //testStoreFrame();
     pthread_t th1, th2;
     int threadCr1, threadCr2;
 

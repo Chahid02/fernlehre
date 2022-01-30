@@ -38,7 +38,7 @@ typedef struct
     uint8_t peerNr;
     uint8_t payloadLength;
     char payload[BYTES_PAYLOAD + 1];
-    uint8_t checksum;
+    uint16_t checksum;
 }Frame;
 
 typedef struct gm
@@ -76,7 +76,6 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid);
 /*
 data: payload for which the checksum be calculated
 checksumBuffer: Pointer to data where checksum will be stored
-length: length of data in bytes
 */
 uint8_t calcChecksum(char* data, uint16_t* checksumBuffer);
 
@@ -99,6 +98,11 @@ uint8_t createLog(char* filepath);
 writes info from msgFrame into logfile at path filepath
 */
 uint8_t logMessage(Frame msgFrame, char* filepath);
+
+/*
+incect biftlip in payload at given index bitIndex
+*/
+uint8_t injectError(char* rawFrame, uint16_t bitIndex);
 
 
 

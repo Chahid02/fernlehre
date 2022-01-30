@@ -245,11 +245,16 @@ int recvgroup(int *mysocket, char *message_recv){
 
     ssize_t bytes_recv;
     Frame frame_recv;
+    uint16_t recvChecksumCalculated;
+    bool checksumValid = false;
     
     int8_t idtoack;
     message_recv[0] = '\0';
 
     bytes_recv = recv(*mysocket,message_recv,(size_t)BYTES_FRAME_TOTAL,0);
+
+    
+
 
     if (bytes_recv >= 0)
     {
@@ -266,7 +271,19 @@ int recvgroup(int *mysocket, char *message_recv){
         //printf("TEST0");
         inputData buff = {.userMsg=frame_recv.payload};
 
-        if (frame_recv.ack == 0)
+        calcChecksum(frame_recv.payload, &recvChecksumCalculated);
+        if(frame_recv.checksum != recvChecksumCalculated)
+        {
+            checksumValid = false;
+            printf("Checksum invalid!\n");
+        }
+        else
+        {
+            checksumValid = true;
+        }
+
+
+        if ((frame_recv.ack == 0) && checksumValid)
         {
             idtoack = frame_recv.peerNr;
             frame_recv.ack = 1;
@@ -319,12 +336,10 @@ uint8_t calcChecksum(char* data, uint16_t* checksumBuffer)
         uint16_t dataBlock;
         memcpy(&dataBlock, data + i, 2);
         checksum += dataBlock;
-        //printf("Checksum before bitshift: %d \n", checksum);
         if(checksum > 0xFFFF)
         {
             checksum -= 0xFFFF;
         }
-        //printf("Checksum after bitshift: %d\n", checksum);
     }
     *checksumBuffer = ~checksum;
 
@@ -335,6 +350,7 @@ uint8_t storeFrame(Frame* storageFrame, char rawFrame [BYTES_FRAME_TOTAL])
 {
     uint8_t errCode = 0;
     uint8_t bufferPosition = 0;
+    int16_t tempChecksum;
 
     if(rawFrame == NULL || storageFrame == NULL)
     {
@@ -354,7 +370,12 @@ uint8_t storeFrame(Frame* storageFrame, char rawFrame [BYTES_FRAME_TOTAL])
     memcpy(&(storageFrame->payload), rawFrame + bufferPosition, BYTES_PAYLOAD);
     bufferPosition += BYTES_PAYLOAD;
     storageFrame->payload[BYTES_PAYLOAD] = '\0';
-    memcpy(&(storageFrame->checksum), rawFrame + bufferPosition, BYTES_CHECKSUM);
+    tempChecksum = rawFrame[bufferPosition] << 8;
+    printf("Tempchecksum: %d\n", tempChecksum);
+    tempChecksum += rawFrame[bufferPosition+1];
+    printf("Tempchecksum: %d\n", tempChecksum);
+    storageFrame->checksum = tempChecksum;
+    printf("Storage Frame Checksum: %d\n", storageFrame->checksum);
 
     return errCode;
 }
@@ -366,6 +387,7 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
     uint8_t bufferPosition = 0;
     char payloadTemp[BYTES_PAYLOAD + 1];
     uint16_t checksum;
+    char checksumTemp[BYTES_CHECKSUM];
 
     rawFrame[0] = msgId;
     bufferPosition += BYTES_MSG_ID;
@@ -397,7 +419,14 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
 
     bufferPosition += BYTES_PAYLOAD;
     errCode = calcChecksum(payloadTemp, &checksum);
-    memcpy(rawFrame+bufferPosition, &checksum, BYTES_CHECKSUM);
+    printf("Checksum creating frame: %d\n", checksum);
+    printf("TEST\n");
+    printf("Checksum shifted: %d\n", checksum >> 8);
+    checksumTemp[0] = checksum >> 8;
+    checksumTemp[1] = (uint8_t) (checksum & 0xFF);
+    printf("Checksum byte 1: %x\n", checksumTemp[0]);
+    printf("Checksum byte 2: %x\n", checksumTemp[1]);
+    memcpy(rawFrame+bufferPosition, &checksumTemp, BYTES_CHECKSUM);
     bufferPosition += BYTES_CHECKSUM;
     rawFrame[bufferPosition] = '\0';
 
@@ -406,7 +435,7 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
 
 uint8_t createLog(char* filepath)
 {
-    uint8_t errCode;
+    uint8_t errCode = 0;
     FILE* myFile = fopen(filepath, "w");
     if(myFile == NULL)
     {
@@ -420,7 +449,7 @@ uint8_t createLog(char* filepath)
 
 uint8_t logMessage(Frame msgFrame, char* filepath)
 {
-    uint8_t errCode;
+    uint8_t errCode = 0;
     //printf("Writing to log...\n");
     FILE* myFile = fopen(filepath, "a");
     if(myFile == NULL)
@@ -430,6 +459,26 @@ uint8_t logMessage(Frame msgFrame, char* filepath)
     //print MsgId Peer Payload
     fprintf(myFile, "%9d %6d %s \n", msgFrame.msgId, msgFrame.peerNr, msgFrame.payload);
     fclose(myFile);
+
+    return errCode;
+}
+
+uint8_t injectError(char* rawFrame, uint16_t bitIndex)
+{
+    uint8_t errCode = 0;
+    Frame inputFrame;
+    uint8_t byteIndex;
+    uint8_t indexWithinByte;
+
+    storeFrame(&inputFrame, rawFrame);
+
+    //calculate which byte of the payload to address
+    for(byteIndex = 0; byteIndex * 8 <= bitIndex; byteIndex++);
+    byteIndex -= 1;
+    indexWithinByte = bitIndex % 8;
+
+    rawFrame[BYTES_MSG_ID + BYTES_SENDER_ID + BYTES_ACK + BYTES_PEER_NR + BYTES_PAYLOAD_LENGTH + byteIndex] ^= (1 << (7-indexWithinByte));
+
 
     return errCode;
 }
