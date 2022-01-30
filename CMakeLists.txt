@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
-project(fernlehre VERSION 0.0.1)
+project(groupcommunication VERSION 1.0.0)
  
-add_executable(fernlere main.c gui.c middleware.c)
+add_executable(groupcommunication main.c gui.c middleware.c)
 
 find_package(pthread)
-target_link_libraries(fernlere pthread)
+target_link_libraries(groupcommunication pthread)

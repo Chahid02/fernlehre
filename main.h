@@ -28,20 +28,11 @@
 #include "gui.h"
 #include "middleware.h"
 
-extern char* logfilePathTesting; //das benutzen für Middlewaretests, später den Path aus der GUI benutzen
-
-/*---------------------------------------------------------*/
-/*---- STRUCT DEFINES--------------------------------------*/
-/*---------------------------------------------------------*/
-
-
 /*---------------------------------------------------------*/
 /*---- PROTOTYPE DECLARATION  -----------------------------*/
 /*---------------------------------------------------------*/
 
 void *UI_INTERFACE(void *threadID);
-void *MW_INTERFACE(void *threadID);
-extern void testMiddleWare();
 extern int middleware();
 
 #endif

@@ -50,13 +50,6 @@
 #define PEER_MAX_DEC 5
 #define consumeBuffer() while (getchar() != '\n');
 
-
-#define configFile "config.txt"
-#define logFile "log.txt"
-#define configPath "../config.txt"
-#define logPath "../log.txt"
-
-
 extern char logfilePath[100];
 extern char configfilePath[100];
 

@@ -3,7 +3,7 @@
 
 //Global Variables:
 char frameToSend[BYTES_FRAME_TOTAL];     //Connection between MW and UI
-uint8_t groupsize = 3;          //Amount of group members (needs to be set by UI)
+uint8_t groupsize = MAX_PEERS;          //Amount of group members (needs to be set by UI)
 uint8_t myID = 255;               //ID of Peer (needs to be set by UI)
 uint32_t message_cnt = 0;       //message counter represents the latest message id
 uint8_t mesID_cnt[MAX_PEERS];
@@ -62,9 +62,6 @@ int middleware( void )
 // Receive Message from group
 
         recvgroup(&mysocket);
-
-        //TODO: Parse Message (or get it already parsed from function)
-        //TODO: Message already received? If yes: ignore, if no: hand massage text over to "sendgroup"
     }
 
     if(close(mysocket)==-1)
@@ -136,7 +133,7 @@ int setupMW(groupmember (*mygroup)[],int myID, int *mysocket){
 
     mesID_cnt[myID] = 1;
 
-    createLog(logfilePathTesting);
+    createLog(logfilePath);
 
     // Create socket
     *mysocket = socket((*mygroup)[myID].addr.sin_family, (enum __socket_type) SOCK_DGRAM, 0);
@@ -179,7 +176,7 @@ int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, 
             #ifdef DEBUG
             printf("Received Message [%i %i] from Peer %i: %s\n",frame_recv.msgId,frame_recv.sndId,frame_recv.peerNr,frame_recv.payload);
             #endif
-            logMessage(frame_recv, logfilePathTesting);
+            logMessage(frame_recv, logfilePath);
         }
         else
         {
@@ -276,6 +273,8 @@ int recvgroup(int *mysocket){
     if (bytes_recv >= 0)
     {
         storeFrame(&frame_recv, message_recv);
+        
+        #ifdef DEBUG
         printf("Received:\n");
         printf("MsgID: %d\n", frame_recv.msgId);
         printf("SndID: %d\n", frame_recv.sndId);
@@ -284,12 +283,16 @@ int recvgroup(int *mysocket){
         printf("PayloadLength: %d\n", frame_recv.payloadLength);
         printf("Payload: %s\n", frame_recv.payload);
         printf("Checksum received: %d\n", frame_recv.checksum);
-        
-        //printf("TEST0");
+        #endif
+
         inputData buff = {.userMsg=frame_recv.payload};
 
         calcChecksum(frame_recv.payload, &recvChecksumCalculated);
+
+        #ifdef DEBUG
         printf("Checksum calced: %d\n", recvChecksumCalculated);
+        #endif
+
         if(frame_recv.checksum != recvChecksumCalculated)
         {
             checksumValid = false;

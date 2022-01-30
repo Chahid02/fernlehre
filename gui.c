@@ -117,7 +117,7 @@ void UI_LOG(void)
     printf("[X] Enter the Path of the LOG File:");
 
     scanf("%s", logfilePath);
-    // snprintf(filename, sizeof(logFilename), "%d", logPath);
+
     int file_descriptor = open(logfilePath, O_RDWR | O_CREAT, 0777);
 
     if (file_descriptor == -1)
@@ -171,6 +171,7 @@ void UI_GROUPID(void)
 
     char buffer[4];
 
+    clearStdinNewlines();
     fgets(buffer, 3, stdin);
     
     pthread_mutex_lock(&mymutex);

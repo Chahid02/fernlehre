@@ -10,7 +10,7 @@
 
     Use the following command (if you are in the same folder) in the terminal
 
-        ./fernlehre
+        ./groupcommunication
 
 3. You are asked to input the path of the configfile
 
@@ -33,13 +33,24 @@
 
 The AGREEMENT requirement is fulfilled, because EVERY new message (with a new or not yet received ID) gets delivered.
 
+## Change Groupsize
 
-## Limitations
+Go to "middleware.h" and change MAX_PEERS to the desired size
 
-Due to a lack of timemanagement we had to take some minor limitations into account:
+## Recompiling
+
+Use CMake Version >= 3.18 and run the following commands:
+
+        $ cmake .
+        $ make all
+
+## Assumtions
+
+We had to take some minor limitations into account:
 
 1. Only 255 Messages can be sent from one peer
-2. The maximum message size is 32 
+2. The maximum message size is 32
+3. Entries in configfile have to be exactly as much as the defined groupsize
 
 ## Message Frame
 
