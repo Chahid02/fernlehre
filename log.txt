@@ -1,5 +1,3 @@
 MessageID PeerNr Payload
-        1      0 hello
- 
-        2      0 asdf
+        1      0 asdf
  

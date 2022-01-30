@@ -238,11 +238,12 @@ void UI_READ_CONFIG(void)
     {
         printf("ID: %i ,",mygroup[i].id);
         printf("IPv4: %s ,",mygroup[i].ipv4);
-        printf("Port: %i\n",mygroup[i].port);
+        printf("Port: %i",mygroup[i].port);
         if (i==myID)
         {
-            printf("<-- This is the selected Peer.");
+            printf("  <-- This is the selected Peer.");
         }
+        printf("\n");
     }
     printf("\nHit enter to return to menu!\n");
     char enter = 0;
