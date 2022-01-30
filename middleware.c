@@ -551,8 +551,28 @@ bool readConfig(const char *filename)
     free(line);
     fclose(file);
 
-
-
-
     return true;
+}
+
+
+int getWords(char *base, char target[20][120])
+{
+    int n = 0, i, j = 0;
+
+    for (i = 0; true; i++)
+    {
+        if (base[i] != ' ')
+        {
+            target[n][j++] = base[i];
+        }
+        else
+        {
+            target[n][j++] = '\0'; // insert NULL
+            n++;
+            j = 0;
+        }
+        if (base[i] == '\0')
+            break;
+    }
+    return n;
 }

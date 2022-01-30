@@ -12,25 +12,31 @@
 #ifndef GUI_H_
 #define GUI_H_
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <pthread.h>
+#include <time.h>
+#include <errno.h>
+#include <stdbool.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
-#include <stdbool.h>
 #include <sys/uio.h>
-#include <fcntl.h>
+#include <inttypes.h>
+#include <stdint.h>
+#include <sys/socket.h>
+
+#include "middleware.h"
+#include "main.h"
+
 /*---------------------------------------------------------*/
 /*---- MULTITHREAD DEFINES  -------------------------------*/
 /*---------------------------------------------------------*/
-#define NUM_THREADS 2
 #define NUM_UI_TREAD 0
-
-#define LOG(X, Y) fprintf (fp, #X ": Time:%s, File:%s(%d) " #Y  "\n", __TIMESTAMP__, __FILE__, __LINE__)
 
 /*---------------------------------------------------------*/
 /*---- TERMINAL PRINTCLEAR --------------------------------*/
@@ -51,13 +57,8 @@
 #define logPath "../log.txt"
 
 
-
-//groupmember mygroup[groupsize];
-
 extern char logfilePath[100];
 extern char configfilePath[100];
-//extern int LogCreateFlag;
-
 
 /*---------------------------------------------------------*/
 /*---- PROTOTYPE DECLARATION  -----------------------------*/

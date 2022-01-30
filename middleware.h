@@ -79,6 +79,7 @@ int setupMW(groupmember (*mygroup)[],int myID, int *mysocket);
 groupmember parsemes(char *message);
 int ACK(groupmember (*mygroup)[], int *mysocket, int peerid);
 bool readConfig(const char *filename);
+int getWords(char *base, char target[20][120]);
 
 /*
 data: payload for which the checksum be calculated
