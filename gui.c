@@ -59,6 +59,8 @@ char str[20][120], s1[120];
 int k = 5, found = 0;
 char arr[20][120];
 
+static char userInputBuffer[BYTES_PAYLOAD+1];
+
 int getWords(char *base, char target[20][120])
 {
     int n = 0, i, j = 0;
@@ -410,14 +412,22 @@ void UI_SND_MSG(void){
     printf("---------------------------------------------\n");
     printf("[X] Please enter your message:\n");
 
-    char buffer[BYTES_PAYLOAD+1];
-    buffer[0]='\0';
+    // char buffer[BYTES_PAYLOAD+1];
+    // buffer[0]='\0';
+    uint8_t inputLength = 0;
+    char* ptrToBuffer = &userInputBuffer[0];
     fflush(stdin);
-    fgets(buffer, BYTES_PAYLOAD+1, stdin);
-    fgets(buffer, BYTES_PAYLOAD+1, stdin);
+    fgets(userInputBuffer, BYTES_PAYLOAD+1, stdin);
+    printf("First fgets: %s", userInputBuffer);
+    fgets(userInputBuffer, BYTES_PAYLOAD+1, stdin);
+    printf("2nd fgets: %s", userInputBuffer);
+    inputLength = strlen(ptrToBuffer);
+    printf("InputLegnth: %d\n", inputLength);
     pthread_mutex_lock(&mutexInput);
-    myInputData.userMsg = buffer;
-    myInputData.msgLength = strlen(myInputData.userMsg);
+    //memcpy(myInputData.userMsg, ptrToBuffer, inputLength+1);
+    myInputData.userMsg = ptrToBuffer;
+    printf("User data after copy: %s\n", myInputData.userMsg);
+    myInputData.msgLength = inputLength;
     myInputData.newMsgReceived = true;
     #ifdef DEBUG
     printf("Your input message: %s with length: %i and new: %i\n",myInputData.userMsg,myInputData.msgLength,myInputData.newMsgReceived);

@@ -43,6 +43,9 @@ int middleware( void )
         if (myInputData.newMsgReceived == true)
         {
             createRawFrame(frameToSend, mesID_cnt[myID], myID, 0x00, myID, myInputData);
+            printf("Checksum send byte 1: %x\n", frameToSend[37]);
+            printf("Checksum send byte 2: %x\n", frameToSend[38]);
+            printf("Terminating byte: %x\n", frameToSend[39]);
             sendgroup(&mygroup,groupsize,myID,&mysocket,frameToSend);
             myInputData.newMsgReceived = false;
         }
@@ -267,15 +270,17 @@ int recvgroup(int *mysocket){
         printf("PeerNr: %d\n", frame_recv.peerNr);
         printf("PayloadLength: %d\n", frame_recv.payloadLength);
         printf("Payload: %s\n", frame_recv.payload);
-        printf("Checksum: %d\n", frame_recv.checksum);
+        printf("Checksum received: %d\n", frame_recv.checksum);
         
         //printf("TEST0");
         inputData buff = {.userMsg=frame_recv.payload};
 
         calcChecksum(frame_recv.payload, &recvChecksumCalculated);
+        printf("Checksum calced: %d\n", recvChecksumCalculated);
         if(frame_recv.checksum != recvChecksumCalculated)
         {
             checksumValid = false;
+            
             printf("Checksum invalid!\n");
         }
         else
@@ -284,7 +289,7 @@ int recvgroup(int *mysocket){
         }
 
 
-        if ((frame_recv.ack == 0) /* && checksumValid*/)
+        if ((frame_recv.ack == 0) && checksumValid)
         {
             prev_sender = frame_recv.peerNr;
             frame_recv.ack = 1;
@@ -370,12 +375,9 @@ uint8_t storeFrame(Frame* storageFrame, char rawFrame [BYTES_FRAME_TOTAL])
     memcpy(&(storageFrame->payload), rawFrame + bufferPosition, BYTES_PAYLOAD);
     bufferPosition += BYTES_PAYLOAD;
     storageFrame->payload[BYTES_PAYLOAD] = '\0';
-    tempChecksum = rawFrame[bufferPosition] << 8;
-    printf("Tempchecksum: %d\n", tempChecksum);
-    tempChecksum += rawFrame[bufferPosition+1];
-    printf("Tempchecksum: %d\n", tempChecksum);
+    tempChecksum = (uint16_t) rawFrame[bufferPosition] << 8;
+    tempChecksum += (uint8_t) rawFrame[bufferPosition+1];
     storageFrame->checksum = tempChecksum;
-    printf("Storage Frame Checksum: %d\n", storageFrame->checksum);
 
     return errCode;
 }
@@ -387,7 +389,8 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
     uint8_t bufferPosition = 0;
     char payloadTemp[BYTES_PAYLOAD + 1];
     uint16_t checksum;
-    char checksumTemp[BYTES_CHECKSUM];
+    char checksumTemp[BYTES_CHECKSUM + 1];
+    checksumTemp[BYTES_CHECKSUM] = '\0';
 
     rawFrame[0] = msgId;
     bufferPosition += BYTES_MSG_ID;
@@ -419,13 +422,8 @@ uint8_t createRawFrame(char rawFrame[BYTES_FRAME_TOTAL], uint8_t msgId, uint8_t 
 
     bufferPosition += BYTES_PAYLOAD;
     errCode = calcChecksum(payloadTemp, &checksum);
-    printf("Checksum creating frame: %d\n", checksum);
-    printf("TEST\n");
-    printf("Checksum shifted: %d\n", checksum >> 8);
     checksumTemp[0] = checksum >> 8;
-    checksumTemp[1] = (uint8_t) (checksum & 0xFF);
-    printf("Checksum byte 1: %x\n", checksumTemp[0]);
-    printf("Checksum byte 2: %x\n", checksumTemp[1]);
+    checksumTemp[1] = (checksum & 0xFF);;
     memcpy(rawFrame+bufferPosition, &checksumTemp, BYTES_CHECKSUM);
     bufferPosition += BYTES_CHECKSUM;
     rawFrame[bufferPosition] = '\0';
