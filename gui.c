@@ -245,6 +245,8 @@ void UI_READ_CONFIG(void)
         }
         printf("\n");
     }
+
+    clearStdinNewlines();
     printf("\nHit enter to return to menu!\n");
     char enter = 0;
     while (enter != '\r' && enter != '\n')
@@ -318,6 +320,7 @@ void UI_LOG_READ(void)
         close(file_descriptor);
     }
 
+    clearStdinNewlines();
     printf("\nHit enter to return to menu!\n");
     char enter = 0;
     while (enter != '\r' && enter != '\n')
