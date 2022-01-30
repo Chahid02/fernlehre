@@ -9,8 +9,8 @@ uint32_t message_cnt = 0;       //message counter represents the latest message 
 uint8_t mesID_cnt[MAX_PEERS];
 groupmember mygroup[MAX_PEERS];
 pthread_mutex_t mymutex = PTHREAD_MUTEX_INITIALIZER;
-
-extern inputData myInputData;
+pthread_mutex_t mutexInput = PTHREAD_MUTEX_INITIALIZER;
+inputData myInputData = {.newMsgReceived = false};
 
 int middleware( void )
 {
@@ -39,13 +39,14 @@ int middleware( void )
 
 //----------------------------------------------------------------------------------
 // Check for user input & send message to group
+        pthread_mutex_lock(&mutexInput);
         if (myInputData.newMsgReceived == true)
         {
-            printf("%s",frameToSend);
+            createRawFrame(frameToSend, mesID_cnt[myID], myID, 0x00, myID, myInputData);
             sendgroup(&mygroup,groupsize,myID,&mysocket,frameToSend);
             myInputData.newMsgReceived = false;
         }
-
+        pthread_mutex_unlock(&mutexInput);
 //----------------------------------------------------------------------------------
 // Receive Message from group
 
@@ -83,10 +84,10 @@ void getMembers(groupmember (*mygroup)[], int groupsize){
 
      for (int i = 0; i < groupsize; i++)     //TODO: get memberinfos from ui --> DONE!!!
     {
-        // (*mygroup)[i].id = i;
-        // printf("%i",(*mygroup)[i].id);
-        // strcpy((*mygroup)[i].ipv4,"127.0.0.1");
-        // (*mygroup)[i].port = 8080+i;
+        (*mygroup)[i].id = i;
+        printf("%i",(*mygroup)[i].id);
+        strcpy((*mygroup)[i].ipv4,"127.0.0.1");
+        (*mygroup)[i].port = 8080+i;
         (*mygroup)[i].addr.sin_family = AF_INET;
 
         if(inet_aton((*mygroup)[i].ipv4, &(*mygroup)[i].addr.sin_addr)==0)
@@ -245,7 +246,7 @@ int ACK(groupmember (*mygroup)[], int *mysocket, int peerid){
 
 int recvgroup(int *mysocket){
 
-    char *message_recv[BYTES_PAYLOAD_LENGTH];
+    char message_recv[BYTES_PAYLOAD];
     ssize_t bytes_recv;
     Frame frame_recv;
     uint16_t recvChecksumCalculated;
@@ -255,9 +256,6 @@ int recvgroup(int *mysocket){
     message_recv[0] = '\0';
 
     bytes_recv = recv(*mysocket,message_recv,(size_t)BYTES_FRAME_TOTAL,0);
-
-    
-
 
     if (bytes_recv >= 0)
     {
@@ -286,7 +284,7 @@ int recvgroup(int *mysocket){
         }
 
 
-        if ((frame_recv.ack == 0) && checksumValid)
+        if ((frame_recv.ack == 0) /* && checksumValid*/)
         {
             prev_sender = frame_recv.peerNr;
             frame_recv.ack = 1;

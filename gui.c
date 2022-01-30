@@ -46,8 +46,8 @@ bool correct = false;
 long result;
 // extern int inputID_GLOBAL = 0;
 // extern int inputID_FLAG = 0;
- char logFilename[100] = {0};
- char configFilename[100] = {0};
+char logfilePath[100] = {0};
+char configfilePath[100] = {0};;
 int readSize;
 int LogCreateFlag = 0;
 
@@ -153,22 +153,22 @@ bool read_file(const char *filename)
     return true;
 }
 
-void UI_MW_MEMBER(void)
-{
+// void UI_MW_MEMBER(void)
+// {
 
-    if (!read_file(configFilename))
-    {
-        printf("Error reading file\n");
-        exit(EXIT_FAILURE);
-    }
+//     if (!read_file(configfilePath))
+//     {
+//         printf("Error reading file\n");
+//         exit(EXIT_FAILURE);
+//     }
 
-    for (int i = 0; i < PEER_MAX_DEC; i++)
-    {
-        printf("ID: %i ", mygroup[i].id);
-        printf("IPv4: %s ", mygroup[i].ipv4);
-        printf("Port: %i\n", mygroup[i].port);
-    }
-}
+//     for (int i = 0; i < PEER_MAX_DEC; i++)
+//     {
+//         printf("ID: %i ", mygroup[i].id);
+//         printf("IPv4: %s ", mygroup[i].ipv4);
+//         printf("Port: %i\n", mygroup[i].port);
+//     }
+// }
 
 bool IS_INT_STRING(char *input)
 {
@@ -190,17 +190,11 @@ void GUI_SELECTION(void)
     printf("---------------------------------------------\n");
     printf("----- UI SELECTION --------------------------\n");
     printf("---------------------------------------------\n");
-    printf("[X] NUMBER:1 -----> CONFIGURE YOUR PEER ID \n");
-    printf("[X] NUMBER:2 -----> CONFIGURE CONFIG PEER FILE \n");
-    printf("[X] NUMBER:3 -----> READ CONFIG PEER FILE \n");
-    printf("[X] NUMBER:4 -----> GET PEER INFORMATION \n");
-    printf("[X] NUMBER:5 -----> CREATE LOG FILE \n");
-    printf("[X] NUMBER:6 -----> READ LOG FILE \n");
-    printf("[X] NUMBER:7 -----> ERROR INJECTION BIT \n");
-    printf("[X] NUMBER:8 -----> SEND MESSAGE \n");
-    printf("[X] NUMBER:9----> RECEIVED MESSAGES \n");
+    printf("[X] NUMBER:1 -----> SEND MESSAGE \n");
+    printf("[X] NUMBER:2 -----> SHOW RECEIVED MESSAGES (read log file) \n");
+    printf("[X] NUMBER:3 -----> SET ERROR INJECTION BIT \n");
+    printf("[X] NUMBER:4 -----> SHOW INFOS ABOUT GROUP \n");
     printf("---------------------------------------------\n");
-    printf("[X] NOTE: INPUT BUFFER IS BROKEN AS FUCK !!!!\r\n");
     printf("[X] If you make a typing error, please press enter and type again !\r\n");
     printf("[X] Enter your CMD (1 < n < 10): #");
 }
@@ -214,18 +208,18 @@ void UI_CONF_CONFIG(void)
     printf("---------------------------------------------\n");
     printf("[X] Enter the Path of the Config File:");
 
-    scanf("%s", configFilename);
+    scanf("%s", configfilePath);
     // snprintf(filename, sizeof(filename), "%d", configPath);
-    file_descriptor = open(configFilename, O_RDWR | O_CREAT, 0777);
+    file_descriptor = open(configfilePath, O_RDONLY, 0777);
 
     if (file_descriptor == -1)
     {
-        perror("[X] CONFIG FILE NOT FOUND");
-        // exit(1);
+        perror("[X] CONFIG FILE NOT FOUND (please create one before starting)\n");
+        exit(-1);
     }
     else
     {
-        printf("[X] CONFIG FILE FOUND OR CREATED SUCCESSFULLY\r\n");
+        printf("[X] CONFIG FILE FOUND\r\n");
         close(file_descriptor);
     }
 }
@@ -243,7 +237,7 @@ void UI_READ_CONFIG(void)
     char *configContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
 
     /*--------------------------------------------------------------------------------------------*/
-    file_descriptor = open(configFilename, O_RDWR, 0777);
+    file_descriptor = open(configfilePath, O_RDWR, 0777);
     if (file_descriptor == -1)
     {
         printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
@@ -254,8 +248,8 @@ void UI_READ_CONFIG(void)
     {
 
         readSize = read(file_descriptor, configContent, 500);
-        printf("[X] Reading file : %s\n", configFilename);
-        printf("[X] Number of bytes written in file %s: %d\r\n", configFilename, readSize);
+        printf("[X] Reading file : %s\n", configfilePath);
+        printf("[X] Number of bytes written in file %s: %d\r\n", configfilePath, readSize);
         printf("[X] configContent:\n%s", configContent);
         fflush(stdout);
         free(configContent);
@@ -276,7 +270,7 @@ void UI_PEER_INFO(void)
     printf("----- PEER INFORMATION ----------------------\n");
     printf("---------------------------------------------\n");
 
-    file_descriptor = open(configFilename, O_RDONLY, 0777);
+    file_descriptor = open(configfilePath, O_RDONLY, 0777);
     if (file_descriptor == -1)
     {
         printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
@@ -326,9 +320,9 @@ void UI_LOG(void)
     printf("---------------------------------------------\n");
     printf("[X] Enter the Path of the LOG File:");
 
-    scanf("%s", logFilename);
-    // snprintf(filename, sizeof(logFilename), "%d", logPath);
-    int file_descriptor = open(logFilename, O_RDWR | O_CREAT, 0777);
+    scanf("%s", logfilePath);
+    // snprintf(filename, sizeof(logfilePath), "%d", logPath);
+    int file_descriptor = open(logfilePath, O_RDWR | O_CREAT, 0777);
 
     if (file_descriptor == -1)
     {
@@ -364,6 +358,17 @@ void UI_GROUPID(void)
     printf("---------------------------------------------\n");
     printf("----- GROUP ID SELECTION --------------------\n");
     printf("---------------------------------------------\n");
+    printf("Please enter your ID! (0-%i)\n",groupsize-1);
+
+    char buffer[4];
+
+    fgets(buffer, 3, stdin);
+    
+    pthread_mutex_lock(&mymutex);
+    myID = atoi(buffer);
+    printf("\nYou selected: %i\n",myID);
+    pthread_mutex_unlock(&mymutex);
+
 }
 
 void UI_LOG_READ(void)
@@ -380,7 +385,7 @@ void UI_LOG_READ(void)
     char *logContent = (char *)calloc(500, sizeof(char *)); // reserve file content with 500 character
 
     /*--------------------------------------------------------------------------------------------*/
-    file_descriptor = open(logFilename, O_RDWR, 0777);
+    file_descriptor = open(logfilePath, O_RDWR, 0777);
     if (file_descriptor == -1)
     {
         printf("[X] CONFIG PATH NOT CONFIGURED !!!\r\n");
@@ -391,16 +396,53 @@ void UI_LOG_READ(void)
     {
 
         readSize = read(file_descriptor, logContent, 500);
-        printf("[X] LOGFILE @Path: %s: \n%s", logFilename, logContent);
+        printf("[X] LOGFILE @Path: %s: \n%s", logfilePath, logContent);
         fflush(stdout);
         free(logContent);
         close(file_descriptor);
     }
 }
 
+void UI_SND_MSG(void){
+
+    printf("---------------------------------------------\n");
+    printf("----- SEND MESSAGE TO GROUP------------------\n");
+    printf("---------------------------------------------\n");
+    printf("[X] Please enter your message:\n");
+
+    char buffer[BYTES_PAYLOAD+1];
+    buffer[0]='\0';
+    fflush(stdin);
+    fgets(buffer, BYTES_PAYLOAD+1, stdin);
+    fgets(buffer, BYTES_PAYLOAD+1, stdin);
+    pthread_mutex_lock(&mutexInput);
+    myInputData.userMsg = buffer;
+    myInputData.msgLength = strlen(myInputData.userMsg);
+    myInputData.newMsgReceived = true;
+    #ifdef DEBUG
+    printf("Your input message: %s with length: %i and new: %i\n",myInputData.userMsg,myInputData.msgLength,myInputData.newMsgReceived);
+    #endif
+    pthread_mutex_unlock(&mutexInput);
+
+}
+
+void UI_ERR_INJ(void){
+
+}
+
 void UI_MAIN(void)
 {
     
+    clrscr();
+    //UI_CONF_CONFIG();
+    strcpy(configfilePath,"../config.txt");
+    clrscr();
+    //UI_LOG();
+    strcpy(logfilePath,"../log.txt");
+    clrscr();
+    UI_GROUPID();
+
+
      while (1)
     {
 
@@ -410,35 +452,17 @@ void UI_MAIN(void)
     switch (switchNumber)
     {
      case 1:
-        UI_GROUPID();
-
-         testMiddleWare();
-         middleware();
-
+        UI_SND_MSG();
         break; 
     case 2:
-        UI_CONF_CONFIG();
-        UI_MW_MEMBER();
+        UI_LOG_READ();
         break;
     case 3:
-        UI_READ_CONFIG();
+        UI_ERR_INJ();
         break;
     case 4:
         UI_PEER_INFO();
         break;
-    case 5:
-        UI_LOG();
-
-        break;
-
-    case 6:
-        UI_LOG_READ();
-        break;
-
-    case 7:
-         createLog(logFilename);
-        break;
-
     default:
         break;
     }
@@ -447,7 +471,7 @@ void UI_MAIN(void)
 
     do
     {
-        int returnVal = scanf("%s", s);
+        fgets(s, 2, stdin);
 
         if (IS_INT_STRING(s))
         {
@@ -457,7 +481,7 @@ void UI_MAIN(void)
         }
         else
         {
-            printf("[X] Enter your CMD (1 < n < 10): #");
+            printf("[X] Enter your CMD (1 <= n <= 4): #");
         }
     } while (!correct);
     

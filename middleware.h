@@ -64,6 +64,8 @@ extern uint8_t myID;              //ID of Peer (needs to be set by UI)
 extern uint32_t message_cnt;       //message counter represents the latest message id
 extern groupmember mygroup[MAX_PEERS];
 extern pthread_mutex_t mymutex;
+extern pthread_mutex_t mutexInput;
+extern inputData myInputData;
 
 int middleware(void);
 int sendgroup(groupmember (*mygroup)[], int groupsize, int myID, int *mysocket, char *payload);

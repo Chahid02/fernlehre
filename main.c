@@ -17,7 +17,7 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 char *logfilePathTesting = "../log.txt"; // das benutzen für Middlewaretests, später den Path aus der GUI benutzen
 
-inputData myInputData = {.newMsgReceived = false};
+
 
 extern int inputID_FLAG;
 extern int inputID_GLOBAL;
@@ -134,15 +134,19 @@ int main(int argc, char **argv)
 {
     clrscr();
     //testStoreFrame();
-    pthread_t th1, th2;
-    int threadCr1, threadCr2;
+    pthread_t th1;
+    int threadCr1;
+    if(pthread_mutex_init(&mymutex,NULL)!=0){
+        printf("ERROR: Mutex was not created!\n");
+    }
+    if(pthread_mutex_init(&mutexInput,NULL)!=0){
+        printf("ERROR: Mutex was not created!\n");
+    }
 
     threadCr1 = pthread_create(&th1, NULL, UI_INTERFACE, (void *)NUM_UI_TREAD);
-    threadCr2 = pthread_create(&th2, NULL, MW_INTERFACE, (void *)NUM_MW_TREAD);
-    if (threadCr1 != 0 && threadCr2 != 0)
+    if (threadCr1 != 0)
     {
         printf("[X] Error:unable to create thread, %dr\\n", threadCr1);
-        printf("[X] Error:unable to create thread, %dr\\n", threadCr2);
         exit(-1);
     }
     else
@@ -157,12 +161,8 @@ int main(int argc, char **argv)
 
     // createLog(logfilePathTesting);
     // testMiddleWare();
-    // middleware();
-    while (1)
-    {
-        //(void) pthread_join(th1, NULL);
-        // (void) pthread_join(th2, NULL);
-    }
+    middleware();
+
 
     // testMiddleWare();
     //  testChecksum();
@@ -201,21 +201,6 @@ void *UI_INTERFACE(void *threadID)
 
         pthread_mutex_lock(&mutex);
         UI_MAIN();
-        pthread_mutex_unlock(&mutex);
-    
-
-    pthread_exit(NULL);
-}
-void *MW_INTERFACE(void *threadID)
-{
-    long thread_ID;
-    thread_ID = (long)threadID;
-
-    // printf("[X] MW INTERFACE ID, %ld started\r\n", thread_ID);
-
-        pthread_mutex_lock(&mutex);
-        testMiddleWare();
-        middleware();
         pthread_mutex_unlock(&mutex);
     
 

@@ -54,8 +54,8 @@
 
 //groupmember mygroup[groupsize];
 
-extern char logFilename[100];
-extern char configFilename[100];
+extern char logfilePath[100];
+extern char configfilePath[100];
 //extern int LogCreateFlag;
 
 
@@ -75,5 +75,7 @@ void clear_buffer();
 void timeStampFunc(void);
 void UI_LOG_READ(void);
 void UI_GROUPID(void);
+void UI_SND_MSG(void);
+void UI_ERR_INJ(void);
 extern void UI_MW_MEMBER(void);
 #endif
