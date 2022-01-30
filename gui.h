@@ -75,4 +75,5 @@ void clear_buffer();
 void timeStampFunc(void);
 void UI_LOG_READ(void);
 void UI_GROUPID(void);
+extern void UI_MW_MEMBER(void);
 #endif
